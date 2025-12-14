@@ -1,6 +1,9 @@
 # Netlify Configuration for Solely Kenya
 
 [build]
+  # Base directory where package.json is located
+  base = "solely-kenya"
+  
   # Build command
   command = "npm run build"
   
