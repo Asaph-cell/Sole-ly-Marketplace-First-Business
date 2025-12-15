@@ -24,9 +24,8 @@ const Shop = () => {
   // Extract unique values from products
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand).filter(Boolean)));
 
-  // Combine predefined categories with any unique ones from products
-  const productCategories = Array.from(new Set(products.map((p) => p.category?.toLowerCase()).filter(Boolean)));
-  const allCategoryKeys = Array.from(new Set([...CATEGORIES.map(c => c.key), ...productCategories]));
+  // Use only predefined categories (not database categories)
+  const allCategoryKeys = CATEGORIES.map(c => c.key);
 
   const uniqueSizes = Array.from(new Set(products.flatMap((p) => p.sizes || []).filter(Boolean))).sort((a, b) => Number(a) - Number(b));
 
