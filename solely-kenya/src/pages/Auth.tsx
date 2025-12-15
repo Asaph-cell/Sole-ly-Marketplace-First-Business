@@ -124,14 +124,10 @@ const Auth = () => {
             </div>
 
             {/* Instructions */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h4 className="font-semibold text-amber-800 mb-2">📧 Next Steps:</h4>
-              <ol className="text-sm text-amber-700 space-y-2 list-decimal list-inside">
-                <li>Open your email inbox</li>
-                <li>Look for an email from <strong>Solely Marketplace</strong></li>
-                <li>Click the <strong>"Confirm your email"</strong> link</li>
-                <li>You'll be redirected back to sign in</li>
-              </ol>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+              <p className="text-amber-800 font-medium">
+                📧 Please check your email and click the verification link to activate your account.
+              </p>
             </div>
 
             {/* Didn't receive email */}
