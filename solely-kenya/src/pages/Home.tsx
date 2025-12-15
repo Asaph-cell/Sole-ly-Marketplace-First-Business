@@ -73,7 +73,7 @@ const Home = () => {
         {/* Floating Shoes Animation */}
         <FloatingShoes />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-30">
           <ScrollReveal mode="aggressive" delay={0.2}>
             <div className="max-w-2xl">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 leading-tight">

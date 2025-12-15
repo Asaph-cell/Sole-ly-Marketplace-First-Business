@@ -168,7 +168,6 @@ const FloatingShoes = () => {
                             transform: `rotate(${position.rotation}deg) ${isHovered ? 'scale(1.15)' : 'scale(1)'}`,
                             zIndex: isHovered ? 100 : 20 + index,
                             cursor: 'pointer',
-                            display: 'block',
                             textDecoration: 'none',
                             transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), z-index 0s',
                         }}

@@ -41,7 +41,7 @@ const ParallaxHero = ({ children }: ParallaxHeroProps) => {
             </div>
 
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-transparent pointer-events-none" />
 
             {/* Interactive Glow Effect */}
             <div
