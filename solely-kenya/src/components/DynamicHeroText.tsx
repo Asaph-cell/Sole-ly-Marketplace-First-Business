@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 interface DynamicHeroTextProps {
     texts: string[];
     interval?: number;
     className?: string;
+    style?: CSSProperties;
 }
 
 export function DynamicHeroText({
     texts,
     interval = 6000,
-    className
+    className,
+    style
 }: DynamicHeroTextProps) {
     const [index, setIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
@@ -38,7 +40,7 @@ export function DynamicHeroText({
                     : "opacity-0 translate-y-8 blur-sm scale-95",
                 className
             )}
-            style={{ willChange: "transform, opacity, filter" }}
+            style={{ willChange: "transform, opacity, filter", ...style }}
         >
             {texts[index]}
         </span>
