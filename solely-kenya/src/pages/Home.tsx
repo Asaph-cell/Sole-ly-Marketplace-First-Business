@@ -95,7 +95,7 @@ const Home = () => {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 leading-tight">
                 <DynamicHeroText
                   texts={[
-                    "Connecting You to the Best Shoes Across the Country",
+                    "Connecting You to the Best Shoes Across the Country!",
                     "Shop Safely with Escrow Protection",
                     "Start Selling with Zero Upfront Fees",
                     "Strictly Vetted Vendors for Guaranteed Authenticity"
@@ -106,7 +106,7 @@ const Home = () => {
                   }}
                 />
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-bold mb-6 sm:mb-8">
                 Kenya's secure commission-based marketplace. Shop with escrow protection or start selling with zero upfront fees. Your payment is safe until you confirm delivery.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
