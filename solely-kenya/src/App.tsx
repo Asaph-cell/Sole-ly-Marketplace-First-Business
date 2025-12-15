@@ -6,35 +6,57 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const ErrorBoundary = React.lazy(() => import("./components/ErrorBoundary").then(module => ({ default: module.ErrorBoundary })));
-const Navbar = React.lazy(() => import("./components/Navbar"));
-const Footer = React.lazy(() => import("./components/Footer"));
-const Home = React.lazy(() => import("./pages/Home"));
-const Shop = React.lazy(() => import("./pages/Shop"));
-const Product = React.lazy(() => import("./pages/Product"));
-const About = React.lazy(() => import("./pages/About"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const Vendor = React.lazy(() => import("./pages/Vendor"));
-const Auth = React.lazy(() => import("./pages/Auth"));
-const VendorRegistration = React.lazy(() => import("./pages/VendorRegistration"));
-const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
-const Orders = React.lazy(() => import("./pages/Orders"));
-const Terms = React.lazy(() => import("./pages/Terms"));
-const VendorDashboard = React.lazy(() => import("./pages/vendor/VendorDashboard"));
-const VendorProducts = React.lazy(() => import("./pages/vendor/VendorProducts"));
-const VendorAddProduct = React.lazy(() => import("./pages/vendor/VendorAddProduct"));
-const VendorEditProduct = React.lazy(() => import("./pages/vendor/VendorEditProduct"));
-// Subscription flow removed in commission model
-const VendorSettings = React.lazy(() => import("./pages/vendor/VendorSettings"));
-const VendorOrders = React.lazy(() => import("./pages/vendor/VendorOrders"));
-const VendorRatings = React.lazy(() => import("./pages/vendor/VendorRatings"));
-const VendorDisputes = React.lazy(() => import("./pages/vendor/VendorDisputes"));
-const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminDisputes = React.lazy(() => import("./pages/admin/AdminDisputes"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-
 const queryClient = new QueryClient();
+
+// Helper to retry failed lazy load with page reload prompt
+const lazyRetry = (componentImport: () => Promise<any>) =>
+  React.lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+    );
+
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        // First time seeing this error - automatically refresh once
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+        return window.location.reload() as any;
+      }
+      // Already tried refreshing, show error to user
+      throw error;
+    }
+  });
+
+const ErrorBoundary = lazyRetry(() => import("./components/ErrorBoundary").then(module => ({ default: module.ErrorBoundary })));
+const Navbar = lazyRetry(() => import("./components/Navbar"));
+const Footer = lazyRetry(() => import("./components/Footer"));
+const Home = lazyRetry(() => import("./pages/Home"));
+const Shop = lazyRetry(() => import("./pages/Shop"));
+const Product = lazyRetry(() => import("./pages/Product"));
+const About = lazyRetry(() => import("./pages/About"));
+const Contact = lazyRetry(() => import("./pages/Contact"));
+const Vendor = lazyRetry(() => import("./pages/Vendor"));
+const Auth = lazyRetry(() => import("./pages/Auth"));
+const VendorRegistration = lazyRetry(() => import("./pages/VendorRegistration"));
+const Cart = lazyRetry(() => import("./pages/Cart"));
+const Checkout = lazyRetry(() => import("./pages/Checkout"));
+const Orders = lazyRetry(() => import("./pages/Orders"));
+const Terms = lazyRetry(() => import("./pages/Terms"));
+const VendorDashboard = lazyRetry(() => import("./pages/vendor/VendorDashboard"));
+const VendorProducts = lazyRetry(() => import("./pages/vendor/VendorProducts"));
+const VendorAddProduct = lazyRetry(() => import("./pages/vendor/VendorAddProduct"));
+const VendorEditProduct = lazyRetry(() => import("./pages/vendor/VendorEditProduct"));
+// Subscription flow removed in commission model
+const VendorSettings = lazyRetry(() => import("./pages/vendor/VendorSettings"));
+const VendorOrders = lazyRetry(() => import("./pages/vendor/VendorOrders"));
+const VendorRatings = lazyRetry(() => import("./pages/vendor/VendorRatings"));
+const VendorDisputes = lazyRetry(() => import("./pages/vendor/VendorDisputes"));
+const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
+const AdminDisputes = lazyRetry(() => import("./pages/admin/AdminDisputes"));
+const NotFound = lazyRetry(() => import("./pages/NotFound"));
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => (
   <motion.div

@@ -14,4 +14,18 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Optimize chunk strategy to prevent loading errors
+    rollupOptions: {
+      output: {
+        // Create stable chunk names to reduce cache invalidation issues
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui': ['@radix-ui/react-dropdown-menu', '@radix-ui/react-dialog', '@radix-ui/react-select'],
+        },
+      },
+    },
+    // Increase warning limit
+    chunkSizeWarningLimit: 1000,
+  },
 }));
