@@ -27,6 +27,47 @@ serve(async (req) => {
     }
 
     try {
+        // ===== AUTHENTICATION CHECK =====
+        // Get the authorization header
+        const authHeader = req.headers.get('authorization');
+        if (!authHeader) {
+            return new Response(
+                JSON.stringify({ error: 'Missing authorization header. Please log in.' }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
+
+        // Initialize Supabase client with service role for admin operations
+        const supabaseAdmin = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        );
+
+        // Initialize Supabase client with user's auth token to verify user
+        const supabaseUser = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+            {
+                global: {
+                    headers: {
+                        authorization: authHeader,
+                    },
+                },
+            }
+        );
+
+        // Verify the user is authenticated
+        const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+        if (authError || !user) {
+            console.error('Authentication failed:', authError);
+            return new Response(
+                JSON.stringify({ error: 'Invalid authentication. Please log in again.' }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
+
+        console.log('Authenticated user:', user.id);
+
         const { orderId, callbackUrl, cancellationUrl } = await req.json();
 
         // Validate required fields
@@ -37,14 +78,8 @@ serve(async (req) => {
             );
         }
 
-        // Initialize Supabase client
-        const supabase = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        );
-
-        // Get order details with shipping info
-        const { data: order, error: orderError } = await supabase
+        // Get order details with shipping info (use admin client for fetching)
+        const { data: order, error: orderError } = await supabaseAdmin
             .from('orders')
             .select(`
         *,
@@ -59,6 +94,16 @@ serve(async (req) => {
             return new Response(
                 JSON.stringify({ error: 'Order not found' }),
                 { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
+
+        // ===== AUTHORIZATION CHECK =====
+        // Verify the authenticated user owns this order
+        if (order.customer_id !== user.id) {
+            console.error('Authorization failed: User', user.id, 'does not own order', orderId);
+            return new Response(
+                JSON.stringify({ error: 'You are not authorized to process payment for this order.' }),
+                { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
         }
 
@@ -102,7 +147,7 @@ serve(async (req) => {
             });
 
             // Update order with correct total
-            const { error: updateError } = await supabase
+            const { error: updateError } = await supabaseAdmin
                 .from('orders')
                 .update({
                     shipping_fee_ksh: calculatedDeliveryFee,
@@ -179,12 +224,12 @@ serve(async (req) => {
         };
 
         if (existingPayment) {
-            await supabase
+            await supabaseAdmin
                 .from('payments')
                 .update(paymentData)
                 .eq('id', existingPayment.id);
         } else {
-            await supabase
+            await supabaseAdmin
                 .from('payments')
                 .insert(paymentData);
         }
