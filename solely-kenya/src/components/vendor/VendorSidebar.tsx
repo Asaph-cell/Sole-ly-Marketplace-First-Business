@@ -19,6 +19,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/vendor/dashboard" },
   { icon: Package, label: "My Products", path: "/vendor/products" },
   { icon: PlusCircle, label: "Add Product", path: "/vendor/add-product" },
+  { icon: ShoppingBag, label: "Add Accessory", path: "/vendor/add-accessory" },
   { icon: ShoppingBag, label: "Orders", path: "/vendor/orders" },
   { icon: Star, label: "Ratings", path: "/vendor/ratings" },
   { icon: AlertTriangle, label: "Disputes", path: "/vendor/disputes" },

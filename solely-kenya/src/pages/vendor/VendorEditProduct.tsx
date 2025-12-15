@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { ShoeSizeChart } from "@/components/ShoeSizeChart";
 import { AlertTriangle } from "lucide-react";
+import { CATEGORIES } from "@/lib/categories";
 
 const VendorEditProduct = () => {
   const { id } = useParams();
@@ -265,13 +266,11 @@ const VendorEditProduct = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="sneakers">Sneakers</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="sports">Sports</SelectItem>
-                      <SelectItem value="formal">Formal</SelectItem>
-                      <SelectItem value="running">Running</SelectItem>
-                      <SelectItem value="boots">Boots</SelectItem>
-                      <SelectItem value="women's">Women's</SelectItem>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.key} value={cat.key}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

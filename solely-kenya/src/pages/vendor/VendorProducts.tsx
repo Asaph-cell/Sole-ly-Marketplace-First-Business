@@ -7,8 +7,10 @@ import { VendorSidebar } from "@/components/vendor/VendorSidebar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, CheckCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Edit, Trash2, CheckCircle, Package, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { getAccessoryTypeName } from "@/lib/accessoryTypes";
 
 const VendorProducts = () => {
   const { user, loading } = useAuth();
@@ -70,9 +72,93 @@ const VendorProducts = () => {
     }
   };
 
+  // Separate shoes from accessories
+  const shoes = products.filter(p => p.category !== "accessories");
+  const accessories = products.filter(p => p.category === "accessories");
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
+
+  const ProductTable = ({ items, isAccessory = false }: { items: any[]; isAccessory?: boolean }) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Product Name</TableHead>
+          {isAccessory && <TableHead>Type</TableHead>}
+          <TableHead>Price (Ksh)</TableHead>
+          <TableHead>Stock</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {productsLoading ? (
+          <TableRow>
+            <TableCell colSpan={isAccessory ? 6 : 5} className="text-center py-8">
+              Loading products...
+            </TableCell>
+          </TableRow>
+        ) : items.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell className="font-medium">{product.name}</TableCell>
+            {isAccessory && (
+              <TableCell>
+                <Badge variant="outline">
+                  {getAccessoryTypeName(product.accessory_type || "")}
+                </Badge>
+              </TableCell>
+            )}
+            <TableCell>Ksh {product.price_ksh.toLocaleString()}</TableCell>
+            <TableCell>{product.stock}</TableCell>
+            <TableCell>
+              <Badge variant={product.status === "active" ? "default" : "secondary"}>
+                {product.status}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <div className="flex gap-2">
+                {product.status === "draft" && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handlePublish(product.id)}
+                    title="Publish product"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate(isAccessory ? `/vendor/edit-accessory/${product.id}` : `/vendor/edit-product/${product.id}`)}
+                  title="Edit product"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(product.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+        {!productsLoading && items.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={isAccessory ? 6 : 5} className="text-center py-8 text-muted-foreground">
+              {isAccessory
+                ? "No accessories yet. Add your first accessory to start selling!"
+                : "No products yet. Add your first product to start selling!"}
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
 
   return (
     <div className="min-h-screen">
@@ -82,78 +168,38 @@ const VendorProducts = () => {
         <main className="flex-1 p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">My Products</h1>
-            <Button onClick={() => navigate("/vendor/add-product")}>
-              + Add Product
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => navigate("/vendor/add-product")}>
+                <Package className="h-4 w-4 mr-2" />
+                Add Product
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/vendor/add-accessory")}>
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Add Accessory
+              </Button>
+            </div>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product Name</TableHead>
-                <TableHead>Price (Ksh)</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {productsLoading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    Loading products...
-                  </TableCell>
-                </TableRow>
-              ) : products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>Ksh {product.price_ksh.toLocaleString()}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <Badge variant={product.status === "active" ? "default" : "secondary"}>
-                      {product.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {product.status === "draft" && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handlePublish(product.id)}
-                          title="Publish product"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => navigate(`/vendor/edit-product/${product.id}`)}
-                        title="Edit product"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {!productsLoading && products.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No products yet. Add your first product to start selling!
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          <Tabs defaultValue="shoes" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="shoes" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Shoes ({shoes.length})
+              </TabsTrigger>
+              <TabsTrigger value="accessories" className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4" />
+                Accessories ({accessories.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="shoes">
+              <ProductTable items={shoes} />
+            </TabsContent>
+
+            <TabsContent value="accessories">
+              <ProductTable items={accessories} isAccessory />
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
     </div>
