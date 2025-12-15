@@ -92,7 +92,7 @@ const Home = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal mode="aggressive" delay={0.2}>
             <div className="max-w-2xl">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
                 <DynamicHeroText
                   texts={[
                     "Find Your Perfect Shoes in Kenya",
@@ -100,7 +100,12 @@ const Home = () => {
                     "Start Selling with Zero Upfront Fees",
                     "Verified Vendors. Authentic Kicks."
                   ]}
-                  className="text-primary block mt-2"
+                  className="block mt-2"
+                  style={{
+                    color: '#000',
+                    WebkitTextStroke: '2px hsl(45, 69%, 50%)',
+                    paintOrder: 'stroke fill',
+                  }}
                 />
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
