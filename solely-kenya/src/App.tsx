@@ -40,6 +40,7 @@ const About = lazyRetry(() => import("./pages/About"));
 const Contact = lazyRetry(() => import("./pages/Contact"));
 const Vendor = lazyRetry(() => import("./pages/Vendor"));
 const Auth = lazyRetry(() => import("./pages/Auth"));
+const ResetPassword = lazyRetry(() => import("./pages/ResetPassword"));
 const VendorRegistration = lazyRetry(() => import("./pages/VendorRegistration"));
 const Cart = lazyRetry(() => import("./pages/Cart"));
 const Checkout = lazyRetry(() => import("./pages/Checkout"));
@@ -84,6 +85,7 @@ const AnimatedRoutes = () => {
         <Route path="/vendor" element={<PageWrapper><Vendor /></PageWrapper>} />
         <Route path="/vendor/register" element={<PageWrapper><VendorRegistration /></PageWrapper>} />
         <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
+        <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Cart /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><Checkout /></PageWrapper>} />
         <Route path="/orders" element={<PageWrapper><Orders /></PageWrapper>} />

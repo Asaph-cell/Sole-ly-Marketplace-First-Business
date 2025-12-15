@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, CheckCircle2 } from "lucide-react";
+import { Mail, CheckCircle2, ArrowLeft, KeyRound } from "lucide-react";
 import logo from "@/assets/solely-logo.svg";
 
 // Production URL for email verification redirect
@@ -21,6 +21,8 @@ const Auth = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showEmailSent, setShowEmailSent] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showResetEmailSent, setShowResetEmailSent] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -99,6 +101,133 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${SITE_URL}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      setRegisteredEmail(email);
+      setShowResetEmailSent(true);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show password reset email sent screen
+  if (showResetEmailSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-12 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <KeyRound className="w-10 h-10 text-blue-600" />
+            </div>
+            <CardTitle className="text-2xl text-blue-700">Check Your Email!</CardTitle>
+            <CardDescription className="text-base mt-2">
+              We've sent a password reset link to:
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Email display */}
+            <div className="bg-muted/50 border rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center gap-2 text-lg font-semibold">
+                <Mail className="w-5 h-5 text-primary" />
+                <span>{registeredEmail}</span>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+              <p className="text-blue-800 font-medium">
+                📧 Click the link in your email to reset your password.
+              </p>
+            </div>
+
+            {/* Didn't receive email */}
+            <div className="text-center text-sm text-muted-foreground">
+              <p>Didn't receive the email? Check your spam folder.</p>
+            </div>
+
+            {/* Back to sign in */}
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setShowResetEmailSent(false);
+                setShowForgotPassword(false);
+                setEmail("");
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show forgot password form
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-12 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <img src={logo} alt="Solely Marketplace" className="h-16 w-auto mx-auto mb-4" />
+            <CardTitle className="text-2xl">Forgot Password?</CardTitle>
+            <CardDescription>
+              Enter your email and we'll send you a link to reset your password
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <Label htmlFor="reset-email">Email</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full"
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setEmail("");
+                }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Sign In
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Show email verification success screen
   if (showEmailSent) {
@@ -195,6 +324,15 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
               </form>
             </TabsContent>
 
