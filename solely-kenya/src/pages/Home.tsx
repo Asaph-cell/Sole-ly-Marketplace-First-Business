@@ -103,7 +103,7 @@ const Home = () => {
                   className="text-primary block mt-2"
                 />
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-white mb-6 sm:mb-8" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
                 Kenya's secure commission-based marketplace. Shop with escrow protection or start selling with zero upfront fees. Your payment is safe until you confirm delivery.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
