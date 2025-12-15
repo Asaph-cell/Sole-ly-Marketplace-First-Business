@@ -87,7 +87,7 @@ const Home = () => {
             alt="Colorful shoes collection"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/98 via-black/90 to-black/50 backdrop-blur-md"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-transparent"></div>
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal mode="aggressive" delay={0.2}>
@@ -103,7 +103,7 @@ const Home = () => {
                   className="text-primary block mt-2"
                 />
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
+              <p className="text-base sm:text-lg md:text-xl text-white mb-6 sm:mb-8" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                 Kenya's secure commission-based marketplace. Shop with escrow protection or start selling with zero upfront fees. Your payment is safe until you confirm delivery.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
