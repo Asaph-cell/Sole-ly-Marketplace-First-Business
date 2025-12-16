@@ -11,9 +11,9 @@ const About = () => {
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <img 
+          <img
             src={logo}
-            alt="Solely Marketplace" 
+            alt="Solely Marketplace"
             className="h-20 w-auto mx-auto mb-6"
           />
           <h1 className="text-5xl font-bold mb-6">About Solely Marketplace</h1>
@@ -28,13 +28,13 @@ const About = () => {
             <h2 className="text-3xl font-bold mb-6">Our Story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Solely Marketplace started with a simple idea: make buying and selling shoes in Kenya as easy as chatting with a friend. We noticed that finding quality shoes at fair prices, or reaching customers as a seller, was often complicated and frustrating.
+                Solely Marketplace started with a simple idea: make buying and selling shoes in Kenya as easy as chatting with a friend, and as safe as a handshake. We noticed that finding quality shoes or reaching customers was often complicated, and honestly, sometimes risky.
               </p>
               <p>
-                So we built a platform that's different – one that puts people first. Whether you're a buyer looking for your dream sneakers or a seller wanting to grow your business, we've created a space where everyone wins.
+                That is why we built a platform with a single obsession: security. We wanted to create a space where trust isn't a luxury, but a guarantee. By focusing on a safe, secure environment, we protect both the buyer's money and the seller's product.
               </p>
               <p>
-                Today, we're proud to connect hundreds of buyers and sellers across Kenya, making shoe shopping fun, transparent, and accessible to everyone.
+                Whether you're a buyer looking for your dream sneakers or a seller wanting to grow your business, you can trade with total peace of mind here. Today, we're proud to connect buyers and sellers across Kenya, making shoe shopping transparent, secure, and accessible to everyone.
               </p>
             </div>
           </div>
@@ -151,9 +151,9 @@ const About = () => {
                 </Link>
               </Button>
             ) : (
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/vendor">Become a Vendor</Link>
-            </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/vendor">Become a Vendor</Link>
+              </Button>
             )}
           </div>
         </div>
