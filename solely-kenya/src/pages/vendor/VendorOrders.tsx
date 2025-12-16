@@ -404,7 +404,7 @@ const VendorOrders = () => {
 
     setSaving(true);
     const now = new Date();
-    const autoRelease = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const autoRelease = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000); // 5 days per Terms & Conditions
 
     try {
       const { error: shippingError } = await supabase
@@ -725,7 +725,7 @@ const VendorOrders = () => {
                           <p>Tracking: {order.order_shipping_details.tracking_number}</p>
                         )}
                         <p className="text-muted-foreground mt-2">
-                          Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "3 days after shipment"}.
+                          Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "5 days after shipment"}.
                         </p>
                       </div>
                     )}
