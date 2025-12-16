@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Phone, MapPin, Store, Mail } from "lucide-react";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { LocationPinMap } from "@/components/LocationPinMap";
+import { calculateDeliveryFee } from "@/utils/deliveryPricing";
 
 const paymentOptions = [
   { value: "pesapal", label: "Pay with Pesapal", icon: "💳", description: "M-Pesa, Cards, Airtel Money" },
@@ -25,7 +26,8 @@ const Checkout = () => {
   const [processing, setProcessing] = useState(false);
   const [paymentGateway, setPaymentGateway] = useState<string>("pesapal");
   const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">("delivery");
-  const [vendorProfile, setVendorProfile] = useState<any>(null);;
+  const [vendorProfile, setVendorProfile] = useState<any>(null);
+  const [vendorCounty, setVendorCounty] = useState<string | null>(null);
   const [shipping, setShipping] = useState({
     recipientName: user?.user_metadata?.full_name || "",
     phone: "",
@@ -59,10 +61,10 @@ const Checkout = () => {
 
   const total = useMemo(() => subtotal + shippingFee, [subtotal, shippingFee]);
 
-  // Fetch vendor profile when pickup is selected
+  // Fetch vendor profile and location
   useEffect(() => {
     const fetchVendorProfile = async () => {
-      if (deliveryType === "pickup" && items.length > 0) {
+      if (items.length > 0) {
         try {
           // Get vendor ID from first item
           const productId = items[0].productId;
@@ -75,11 +77,14 @@ const Checkout = () => {
           if (product?.vendor_id) {
             const { data: profile } = await supabase
               .from("profiles")
-              .select("*")
+              .select("*, vendor_county, vendor_city")
               .eq("id", product.vendor_id)
               .single();
 
-            setVendorProfile(profile);
+            if (profile) {
+              setVendorProfile(profile);
+              setVendorCounty(profile.vendor_county || null);
+            }
           }
         } catch (error) {
           console.error("Error fetching vendor profile:", error);
@@ -88,7 +93,7 @@ const Checkout = () => {
     };
 
     fetchVendorProfile();
-  }, [deliveryType, items]);
+  }, [items]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -123,8 +128,19 @@ const Checkout = () => {
     addressLine1: string;
   }) => {
     setSelectedAddress(address.displayName);
-    setDeliveryZone(address.zone);
-    setDeliveryFee(address.deliveryFee);
+
+    // Calculate smart delivery fee based on vendor and buyer locations
+    const smartFee = calculateDeliveryFee({
+      vendorCounty,
+      buyerCounty: address.county,
+      isPickup: false,
+    });
+
+    // Map fee to zone for display (approximate)
+    let zone: 1 | 2 = smartFee === 200 ? 1 : 2;
+
+    setDeliveryZone(zone);
+    setDeliveryFee(smartFee);
     setShipping((prev) => ({
       ...prev,
       addressLine1: address.addressLine1,

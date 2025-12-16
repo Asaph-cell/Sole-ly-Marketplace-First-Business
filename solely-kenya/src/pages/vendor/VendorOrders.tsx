@@ -619,8 +619,8 @@ const VendorOrders = () => {
                                     <p className="text-xs text-blue-800 dark:text-blue-200">{order.order_shipping_details.delivery_notes}</p>
                                   </div>
                                 )}
-                                <p className="text-xs text-muted-foreground mt-2 italic">
-                                  Use these details to estimate delivery charges. Delivery is your responsibility, not Solely's.
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  💰 <strong>Delivery Fee Included:</strong> The buyer has paid KES {order.shipping_fee_ksh.toLocaleString()} for delivery (included in your total payout). You are responsible for arranging and paying for delivery to the customer using this amount. Solely does not handle delivery logistics.
                                 </p>
                               </>
                             )}
@@ -665,8 +665,8 @@ const VendorOrders = () => {
                             Final price: KES {order.total_ksh.toLocaleString()} (Product: KES {order.subtotal_ksh.toLocaleString()} + Delivery: KES {order.shipping_fee_ksh.toLocaleString()})
                           </p>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-3 italic">
-                          Remember: Delivery is handled by you, not Solely. Ensure you ship to the customer's provided address.
+                        <p className="text-xs text-muted-foreground mb-3">
+                          💰 <strong>Delivery Fee Included:</strong> The buyer has paid KES {order.shipping_fee_ksh.toLocaleString()} for delivery (included in your payout of KES {order.total_ksh.toLocaleString()}). Use this amount to arrange and pay for delivery to the customer. Solely does not handle delivery logistics.
                         </p>
                         <p className="text-xs text-muted-foreground mb-3">
                           <strong>Note:</strong> Commission ({order.commission_rate}%) is calculated from product price only (KES {order.subtotal_ksh.toLocaleString()}), not including delivery fees.

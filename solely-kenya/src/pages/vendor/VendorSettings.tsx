@@ -10,16 +10,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 const VendorSettings = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [formData, setFormData] = useState({
     full_name: "",
     whatsapp_number: "",
     store_name: "",
     store_description: "",
+    vendor_city: "",
+    vendor_county: "",
+    vendor_address_line1: "",
+    vendor_address_line2: "",
   });
 
   useEffect(() => {
@@ -47,7 +53,16 @@ const VendorSettings = () => {
         whatsapp_number: data.whatsapp_number || "",
         store_name: data.store_name || "",
         store_description: data.store_description || "",
+        vendor_city: data.vendor_city || "",
+        vendor_county: data.vendor_county || "",
+        vendor_address_line1: data.vendor_address_line1 || "",
+        vendor_address_line2: data.vendor_address_line2 || "",
       });
+
+      // Set display address if location exists
+      if (data.vendor_address_line1 && data.vendor_city) {
+        setSelectedAddress(`${data.vendor_address_line1}, ${data.vendor_city}`);
+      }
     }
   };
 
@@ -141,6 +156,41 @@ const VendorSettings = () => {
                     onChange={(e) => setFormData({ ...formData, store_description: e.target.value })}
                     rows={4}
                   />
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-semibold mb-4">Store Location</h3>
+                  <div className="space-y-4">
+                    <AddressAutocomplete
+                      value={selectedAddress}
+                      onAddressSelect={(address) => {
+                        setSelectedAddress(address.displayName);
+                        setFormData((prev) => ({
+                          ...prev,
+                          vendor_address_line1: address.addressLine1,
+                          vendor_city: address.city,
+                          vendor_county: address.county,
+                        }));
+                      }}
+                      placeholder="Start typing your store location..."
+                      label="📍 Store Address (for delivery calculation)"
+                      required={false}
+                    />
+
+                    <div>
+                      <Label htmlFor="vendor_address_line2">Address Line 2</Label>
+                      <Input
+                        id="vendor_address_line2"
+                        placeholder="Apartment, suite, unit, etc."
+                        value={formData.vendor_address_line2}
+                        onChange={(e) => setFormData({ ...formData, vendor_address_line2: e.target.value })}
+                      />
+                    </div>
+
+                    <p className="text-xs text-muted-foreground">
+                      💡 Your location is used to calculate delivery fees automatically. Keep it updated for accurate pricing.
+                    </p>
+                  </div>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={saving}>

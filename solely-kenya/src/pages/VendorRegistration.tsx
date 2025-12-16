@@ -12,12 +12,14 @@ import { toast } from "sonner";
 import logo from "@/assets/solely-logo.svg";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 const VendorRegistration = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [formData, setFormData] = useState({
     phone: "",
     storeName: "",
@@ -89,8 +91,11 @@ const VendorRegistration = () => {
           whatsapp_number: formData.phone,
           store_name: formData.storeName,
           store_description: formData.storeDescription || null,
-          // Store location in store_description for now
-          // In a real app, you might want to add dedicated location fields to the profiles table
+          vendor_city: formData.city,
+          vendor_county: formData.county,
+          vendor_address_line1: formData.addressLine1,
+          vendor_address_line2: formData.addressLine2 || null,
+          vendor_postal_code: formData.postalCode || null,
         })
         .eq("id", user.id);
 
@@ -190,17 +195,21 @@ const VendorRegistration = () => {
               <div className="border-t pt-4">
                 <h3 className="font-semibold mb-4">Store Location *</h3>
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="addressLine1">Address Line 1 *</Label>
-                    <Input
-                      id="addressLine1"
-                      type="text"
-                      placeholder="Street address, building name"
-                      value={formData.addressLine1}
-                      onChange={handleInputChange("addressLine1")}
-                      required
-                    />
-                  </div>
+                  <AddressAutocomplete
+                    value={selectedAddress}
+                    onAddressSelect={(address) => {
+                      setSelectedAddress(address.displayName);
+                      setFormData((prev) => ({
+                        ...prev,
+                        addressLine1: address.addressLine1,
+                        city: address.city,
+                        county: address.county,
+                      }));
+                    }}
+                    placeholder="Start typing your store location..."
+                    label="📍 Store Address (for delivery calculation)"
+                    required={true}
+                  />
 
                   <div>
                     <Label htmlFor="addressLine2">Address Line 2</Label>
@@ -213,31 +222,6 @@ const VendorRegistration = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="city">City / Town *</Label>
-                      <Input
-                        id="city"
-                        type="text"
-                        placeholder="Nairobi"
-                        value={formData.city}
-                        onChange={handleInputChange("city")}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="county">County</Label>
-                      <Input
-                        id="county"
-                        type="text"
-                        placeholder="Nairobi County"
-                        value={formData.county}
-                        onChange={handleInputChange("county")}
-                      />
-                    </div>
-                  </div>
-
                   <div>
                     <Label htmlFor="postalCode">Postal Code</Label>
                     <Input
@@ -248,6 +232,10 @@ const VendorRegistration = () => {
                       onChange={handleInputChange("postalCode")}
                     />
                   </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    💡 Your location will be used to calculate delivery fees automatically based on distance to customers.
+                  </p>
                 </div>
               </div>
             </div>
