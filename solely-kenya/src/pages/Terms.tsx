@@ -77,9 +77,9 @@ const Terms = () => {
                             <section>
                                 <h3 className="text-xl font-semibold mb-3">3. Ordering Process & Timelines</h3>
                                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                                    <li><strong>Confirmation Window:</strong> Vendors must accept or decline your order within 24 hours. If they fail to do so, the order is automatically cancelled, and you receive a full refund</li>
-                                    <li><strong>Shipping Window:</strong> Once confirmed, vendors must ship the item within 3 days. If they fail to ship, the order is cancelled, and you receive a full refund</li>
-                                    <li><strong>Tracking:</strong> You will receive order updates and tracking details via the platform/email once the item is shipped</li>
+                                    <li><strong>Confirmation Window:</strong> Vendors must accept or decline your order within <strong>48 hours</strong>. If they fail to do so, the order is automatically cancelled, and you receive a full refund</li>
+                                    <li><strong>Delivery Window:</strong> Once confirmed, vendors have <strong>5 days</strong> to deliver your order. If not delivered, a dispute is automatically raised for admin review</li>
+                                    <li><strong>Tracking:</strong> You will receive order updates and tracking details via the platform/email once the item is marked as arrived</li>
                                 </ul>
                             </section>
 
@@ -107,16 +107,17 @@ const Terms = () => {
                                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                                     <li><strong>Inspect:</strong> Check the shoes immediately for quality, size, and accuracy</li>
                                     <li><strong>Confirm:</strong> Log in to Solely and click "Confirm Delivery" if you are satisfied</li>
-                                    <li><strong>Report Issues:</strong> If there is a problem, you must file a dispute within 72 hours of delivery</li>
+                                    <li><strong>Report Issues:</strong> If there is a problem, file a dispute within your verification window</li>
                                 </ul>
                                 <div className="mt-4 bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                                    <h4 className="font-semibold text-foreground mb-2">⚠️ Auto-Release Policy</h4>
+                                    <h4 className="font-semibold text-foreground mb-2">⚠️ Verification & Auto-Release Policy</h4>
                                     <p className="text-sm text-muted-foreground mb-2">
-                                        To ensure vendors are paid fairly, the system automates the release of funds if you are inactive:
+                                        Once the vendor marks your order as "Arrived":
                                     </p>
                                     <ul className="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
-                                        <li><strong>Standard Rule:</strong> Funds are released to the vendor 72 hours after you confirm delivery</li>
-                                        <li><strong>Inactivity Rule:</strong> If the vendor marks the order as "Shipped" and you do not Confirm or Dispute within <strong>5 days</strong>, the system assumes successful delivery and releases the funds</li>
+                                        <li><strong>Delivery Orders:</strong> You have <strong>24 hours</strong> to verify your shoes and either confirm delivery or file a dispute. If you take no action, funds are automatically released to the vendor</li>
+                                        <li><strong>Pickup Orders:</strong> No time limit - you can verify at your own pace</li>
+                                        <li><strong>Immediate Release:</strong> When you click "Confirm Delivery", funds are released to the vendor immediately</li>
                                     </ul>
                                     <p className="text-sm text-muted-foreground mt-2">
                                         <strong>Note:</strong> Please ensure you are available to receive calls from the courier during the delivery window.
@@ -237,24 +238,24 @@ const Terms = () => {
                                     As a vendor, you agree to adhere to the following strict timelines:
                                 </p>
                                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                                    <li><strong>Confirmation:</strong> Accept or reject new orders within 24 hours</li>
-                                    <li><strong>Shipping:</strong> Ship confirmed orders within 3 days</li>
-                                    <li><strong>Delivery:</strong> Ensure delivery occurs within 3 days of shipment</li>
+                                    <li><strong>Confirmation:</strong> Accept or reject new orders within <strong>48 hours</strong></li>
+                                    <li><strong>Delivery:</strong> Deliver orders within <strong>5 days</strong> of confirmation</li>
+                                    <li><strong>Mark Arrived:</strong> Once delivered, mark the order as "Arrived" so the buyer can verify</li>
                                     <li><strong>Tracking:</strong> Provide accurate courier names and tracking numbers/contact details</li>
                                 </ul>
                                 <div className="mt-4 space-y-3">
                                     <h4 className="font-semibold text-foreground">Order Automation Rules</h4>
                                     <p className="text-muted-foreground bg-red-50 border border-red-200 p-3 rounded-lg">
-                                        ❌ <strong>Auto-Cancel (24 hours):</strong> Orders not confirmed by the vendor within 24 hours will be automatically cancelled and the buyer refunded.
+                                        ❌ <strong>Auto-Cancel (48 hours):</strong> Orders not confirmed by the vendor within 48 hours will be automatically cancelled and the buyer refunded.
                                     </p>
                                     <p className="text-muted-foreground bg-amber-50 border border-amber-200 p-3 rounded-lg">
-                                        ⚠️ <strong>No-Ship Refund (3 days):</strong> If an order is confirmed but not marked as "Shipped" within 3 days, it will be cancelled and the buyer refunded.
+                                        ⚠️ <strong>Auto-Dispute (5 days):</strong> If an order is confirmed but not marked as "Arrived" within 5 days, a dispute is automatically raised for admin review.
                                     </p>
                                     <p className="text-muted-foreground bg-green-50 border border-green-200 p-3 rounded-lg">
-                                        ✅ <strong>Auto-Release (Escrow):</strong> Funds are released to the vendor 72 hours after the buyer confirms delivery.
+                                        ✅ <strong>Auto-Release:</strong> For delivery orders, funds are released 24 hours after you mark the order as "Arrived" if the buyer takes no action. Pickup orders have no time limit.
                                     </p>
                                     <p className="text-sm text-muted-foreground mt-2">
-                                        <strong>Note:</strong> If the buyer receives the item but fails to click "Confirm," the system will automatically release funds <strong>5 days after the shipment date</strong>, provided no dispute has been raised.
+                                        <strong>Immediate Release:</strong> When the buyer clicks "Confirm Delivery", funds are released to you immediately.
                                     </p>
                                 </div>
                             </section>
@@ -266,7 +267,7 @@ const Terms = () => {
                                 </h3>
                                 <h4 className="font-semibold text-foreground mb-2">Grounds for Dispute</h4>
                                 <p className="text-muted-foreground mb-3">
-                                    Buyers may file a dispute within 72 hours of delivery for the following reasons:
+                                    Buyers may file a dispute within their verification window (24 hours for delivery orders) for the following reasons:
                                 </p>
                                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
                                     <li><strong>Item Not Received:</strong> The package never arrived</li>
