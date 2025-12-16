@@ -36,7 +36,7 @@ type OrderRecord = Tables<"orders"> & {
 const statusColors: Record<string, "secondary" | "default" | "destructive" | "outline"> = {
   pending_vendor_confirmation: "secondary",
   accepted: "default",
-  shipped: "default",
+  arrived: "default",
   delivered: "default",
   completed: "default",
   disputed: "destructive",
@@ -123,7 +123,7 @@ const VendorOrders = () => {
         // Order must have at least one captured payment and payment >= total
         // Also include orders that are already processed (shipped, delivered, completed)
         const isFullyPaid = totalPaid >= order.total_ksh;
-        const isProcessedOrder = ["shipped", "delivered", "completed", "disputed", "refunded"].includes(order.status);
+        const isProcessedOrder = ["arrived", "delivered", "completed", "disputed", "refunded"].includes(order.status);
 
         return isFullyPaid || isProcessedOrder;
       });
@@ -404,7 +404,10 @@ const VendorOrders = () => {
 
     setSaving(true);
     const now = new Date();
-    const autoRelease = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000); // 5 days per Terms & Conditions
+    const isPickupOrder = order.order_shipping_details?.delivery_type === 'pickup';
+    // For delivery orders: 24 hours after marked arrived
+    // For pickup orders: no auto-release timer (buyer verifies at their own pace)
+    const autoRelease = isPickupOrder ? null : new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
     try {
       const { error: shippingError } = await supabase
@@ -419,10 +422,10 @@ const VendorOrders = () => {
       if (shippingError) throw shippingError;
 
       await updateOrderStatus(order.id, {
-        status: "shipped",
+        status: "arrived",
         vendor_confirmed: true,
         shipped_at: now.toISOString(),
-        auto_release_at: autoRelease.toISOString(),
+        auto_release_at: autoRelease?.toISOString() || null,
       });
 
       // Notify buyer about shipment (non-blocking)
@@ -430,7 +433,7 @@ const VendorOrders = () => {
         body: { orderId: order.id },
       }).catch(err => console.log("Buyer shipment notification failed (non-critical):", err));
 
-      toast.success("Order marked as shipped. Buyer has been notified via email.");
+      toast.success("Order marked as arrived. Buyer has 24 hours to verify.");
     } catch (error) {
       console.error(error);
       toast.error("Failed to update shipment");
@@ -705,7 +708,7 @@ const VendorOrders = () => {
                           disabled={saving || hasPendingDeliveryFee(order)}
                           title={hasPendingDeliveryFee(order) ? "Delivery fee payment must be completed before shipping" : ""}
                         >
-                          {saving ? "Updating..." : "Mark as shipped"}
+                          {saving ? "Updating..." : "Mark as Arrived"}
                         </Button>
                         {hasPendingDeliveryFee(order) && (
                           <p className="text-xs text-muted-foreground mt-2">
@@ -715,9 +718,9 @@ const VendorOrders = () => {
                       </div>
                     )}
 
-                    {order.status === "shipped" && (
+                    {order.status === "arrived" && (
                       <div className="bg-muted rounded-lg p-4 text-sm">
-                        <p className="font-semibold mb-2">Shipped {order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}</p>
+                        <p className="font-semibold mb-2">Arrived {order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}</p>
                         {order.order_shipping_details?.courier_name && (
                           <p>Courier: {order.order_shipping_details.courier_name}</p>
                         )}
@@ -725,7 +728,7 @@ const VendorOrders = () => {
                           <p>Tracking: {order.order_shipping_details.tracking_number}</p>
                         )}
                         <p className="text-muted-foreground mt-2">
-                          Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "5 days after shipment"}.
+                          Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "24 hours after arrival (delivery orders only)"}.
                         </p>
                       </div>
                     )}

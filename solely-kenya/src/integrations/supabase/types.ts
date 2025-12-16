@@ -923,7 +923,7 @@ export type Database = {
       order_status:
       | "pending_vendor_confirmation"
       | "accepted"
-      | "shipped"
+      | "arrived"
       | "delivered"
       | "completed"
       | "disputed"

@@ -118,7 +118,7 @@ const AdminDashboard = () => {
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "completed"),
         supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending_vendor_confirmation"),
-        supabase.from("orders").select("*", { count: "exact", head: true }).in("status", ["vendor_confirmed", "shipped"]),
+        supabase.from("orders").select("*", { count: "exact", head: true }).in("status", ["vendor_confirmed", "arrived"]),
         supabase.from("disputes").select("*", { count: "exact", head: true }).eq("status", "open"),
         supabase.from("commission_ledger").select("commission_amount"),
         supabase.from("commission_ledger").select("commission_amount").gte("recorded_at", monthStart),
@@ -249,7 +249,7 @@ const AdminDashboard = () => {
     const colors: Record<string, string> = {
       pending_vendor_confirmation: "bg-yellow-500",
       vendor_confirmed: "bg-blue-500",
-      shipped: "bg-purple-500",
+      arrived: "bg-purple-500",
       delivered: "bg-green-500",
       completed: "bg-green-600",
       cancelled: "bg-red-500",

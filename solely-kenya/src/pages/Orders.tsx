@@ -88,7 +88,7 @@ const ContactVendorButton = ({ phoneNumber, className = "" }: { phoneNumber: str
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
   pending_vendor_confirmation: { label: "Awaiting vendor", variant: "secondary" },
   accepted: { label: "Vendor accepted", variant: "default" },
-  shipped: { label: "On the way", variant: "default" },
+  arrived: { label: "Arrived", variant: "default" },
   delivered: { label: "Delivered", variant: "default" },
   completed: { label: "Completed", variant: "default" },
   disputed: { label: "In dispute", variant: "destructive" },
@@ -302,7 +302,7 @@ const Orders = () => {
   };
 
   const upcomingActions = useMemo(() => {
-    return orders.filter((order) => order.status === "shipped" && !order.buyer_confirmed);
+    return orders.filter((order) => order.status === "arrived" && !order.buyer_confirmed);
   }, [orders]);
 
   return (
@@ -327,7 +327,7 @@ const Orders = () => {
               {upcomingActions.map((order) => (
                 <div key={order.id} className="flex items-center justify-between">
                   <span>
-                    Order #{order.id.slice(0, 8)} shipped {order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}
+                    Order #{order.id.slice(0, 8)} arrived {order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}
                   </span>
                   <Button size="sm" onClick={() => handleConfirmDelivery(order)}>Confirm delivery</Button>
                 </div>
@@ -456,7 +456,7 @@ const Orders = () => {
                       </div>
                     )}
                     <div className="flex flex-wrap gap-3">
-                      {order.status === "shipped" && !order.buyer_confirmed && (
+                      {order.status === "arrived" && !order.buyer_confirmed && (
                         <Button size="sm" onClick={() => handleConfirmDelivery(order)}>Confirm delivery</Button>
                       )}
                       {order.status === "delivered" && !order.buyer_confirmed && (
