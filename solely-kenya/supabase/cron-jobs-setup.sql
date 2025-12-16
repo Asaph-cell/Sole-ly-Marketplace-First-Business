@@ -26,7 +26,7 @@ SELECT cron.schedule(
     $$
     SELECT
       net.http_post(
-          url:='https://your-project-ref.supabase.co/functions/v1/auto-cancel-stale-orders',
+          url:='https://cqcklvdblhcdowisjnsf.supabase.co/functions/v1/auto-cancel-stale-orders',
           headers:='{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SUPABASE_SERVICE_ROLE_KEY"}'::jsonb,
           body:='{}'::jsonb
       ) as request_id;
@@ -47,7 +47,7 @@ SELECT cron.schedule(
     $$
     SELECT
       net.http_post(
-          url:='https://your-project-ref.supabase.co/functions/v1/auto-release-escrow',
+          url:='https://cqcklvdblhcdowisjnsf.supabase.co/functions/v1/auto-release-escrow',
           headers:='{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SUPABASE_SERVICE_ROLE_KEY"}'::jsonb,
           body:='{}'::jsonb
       ) as request_id;
@@ -69,7 +69,7 @@ SELECT cron.schedule(
     $$
     SELECT
       net.http_post(
-          url:='https://your-project-ref.supabase.co/functions/v1/auto-refund-unshipped',
+          url:='https://cqcklvdblhcdowisjnsf.supabase.co/functions/v1/auto-refund-unshipped',
           headers:='{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SUPABASE_SERVICE_ROLE_KEY"}'::jsonb,
           body:='{}'::jsonb
       ) as request_id;
