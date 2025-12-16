@@ -147,12 +147,8 @@ export function AddressAutocomplete({
     const handleSelectSuggestion = (suggestion: LocationIQSuggestion) => {
         const address = suggestion.address;
 
-        // Use smart delivery pricing to calculate fee
-        // Note: vendorCounty is null here since we don't have vendor context in this component
-        // The actual smart calculation happens in Checkout when vendor location is known
-        // Here we show an approximation based on buyer location only
         const zoneInfo = getDeliveryZoneInfo({
-            vendorCounty: null, // Will be calculated in Checkout
+            vendorCounty: null,
             buyerCounty: address.county || address.state || "",
             isPickup: false,
         });
@@ -236,7 +232,6 @@ export function AddressAutocomplete({
             {showDropdown && suggestions.length > 0 && (
                 <div className="absolute z-50 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-60 overflow-auto">
                     {suggestions.map((suggestion) => {
-                        // Use smart pricing to determine zone display
                         const zoneInfo = getDeliveryZoneInfo({
                             vendorCounty: null,
                             buyerCounty: suggestion.address.county || suggestion.address.state || "",

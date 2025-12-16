@@ -129,15 +129,13 @@ const Checkout = () => {
   }) => {
     setSelectedAddress(address.displayName);
 
-    // Calculate smart delivery fee based on vendor and buyer locations
     const smartFee = calculateDeliveryFee({
       vendorCounty,
       buyerCounty: address.county,
       isPickup: false,
     });
 
-    // Map fee to zone for display (approximate)
-    let zone: 1 | 2 = smartFee === 200 ? 1 : 2;
+    const zone: 1 | 2 = smartFee === 200 ? 1 : 2;
 
     setDeliveryZone(zone);
     setDeliveryFee(smartFee);
