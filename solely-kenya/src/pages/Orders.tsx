@@ -93,7 +93,7 @@ const statusLabels: Record<string, { label: string; variant: "default" | "second
   completed: { label: "Completed", variant: "default" },
   disputed: { label: "In dispute", variant: "destructive" },
   refunded: { label: "Refunded", variant: "outline" },
-  cancelled_by_vendor: { label: "Cancelled", variant: "outline" },
+  cancelled_by_vendor: { label: "Declined by Vendor", variant: "destructive" },
   cancelled_by_customer: { label: "Cancelled", variant: "outline" },
 };
 
@@ -417,6 +417,18 @@ const Orders = () => {
                         </div>
                         <p className="text-sm text-green-700 dark:text-green-400 mt-2">
                           ✓ Payment received. Awaiting vendor confirmation.
+                        </p>
+                      </div>
+                    ) : order.status === "cancelled_by_vendor" ? (
+                      <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="destructive">Order Declined</Badge>
+                        </div>
+                        <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                          The vendor has declined this order.
+                        </p>
+                        <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                          A full refund has been initiated. If you paid via M-Pesa, expect a reversal shortly.
                         </p>
                       </div>
                     ) : null}
