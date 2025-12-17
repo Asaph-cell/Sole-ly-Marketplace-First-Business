@@ -171,8 +171,8 @@ const Footer = () => {
             </div>
             <div className="space-y-2 text-sm">
               <p>
-                <a href="mailto:Solely.kenya@gmail.com" className="hover:text-primary transition-colors">
-                  Solely.kenya@gmail.com
+                <a href="mailto:contact@solelyshoes.co.ke" className="hover:text-primary transition-colors">
+                  contact@solelyshoes.co.ke
                 </a>
               </p>
               <Link to="/terms" className="block hover:text-primary transition-colors">

@@ -94,11 +94,11 @@ const Contact = () => {
               <CardContent className="py-6">
                 <Mail className="h-8 w-8 text-primary mx-auto mb-3" />
                 <p className="text-lg font-semibold mb-2">Email Us Directly</p>
-                <a 
-                  href="mailto:Solely.kenya@gmail.com" 
+                <a
+                  href="mailto:contact@solelyshoes.co.ke"
                   className="text-primary hover:underline text-lg"
                 >
-                  Solely.kenya@gmail.com
+                  contact@solelyshoes.co.ke
                 </a>
                 <p className="text-sm text-muted-foreground mt-3">
                   For complaints, support requests, or general inquiries

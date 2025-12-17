@@ -10,9 +10,9 @@ const Vendor = () => {
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <img 
+          <img
             src={logo}
-            alt="Solely Marketplace" 
+            alt="Solely Marketplace"
             className="h-20 w-auto mx-auto mb-6"
           />
           <h1 className="text-5xl font-bold mb-6">Become a Vendor</h1>
@@ -25,7 +25,7 @@ const Vendor = () => {
             </Button>
             <Button size="lg" variant="outline" asChild>
               <a
-                href="mailto:Solely.kenya@gmail.com"
+                href="mailto:contact@solelyshoes.co.ke"
                 className="inline-flex items-center gap-2"
               >
                 Contact Support
@@ -230,7 +230,7 @@ const Vendor = () => {
               asChild
             >
               <a
-                href="mailto:Solely.kenya@gmail.com"
+                href="mailto:contact@solelyshoes.co.ke"
                 className="inline-flex items-center gap-2"
               >
                 Contact Support

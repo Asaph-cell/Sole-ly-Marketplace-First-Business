@@ -10,7 +10,7 @@ interface AuthButtonsProps {
 }
 
 export const AuthButtons = ({ user, isVendor, isVendorPage, onLogout }: AuthButtonsProps) => {
-  const supportEmail = "Solely.kenya@gmail.com";
+  const supportEmail = "contact@solelyshoes.co.ke";
   return (
     <>
       <Button variant="outline" size="sm" asChild>
@@ -22,7 +22,7 @@ export const AuthButtons = ({ user, isVendor, isVendorPage, onLogout }: AuthButt
           Email Support
         </a>
       </Button>
-      
+
       {!user ? (
         <>
           <Button variant="outline" size="sm" asChild>
@@ -41,10 +41,10 @@ export const AuthButtons = ({ user, isVendor, isVendorPage, onLogout }: AuthButt
                 My Purchases
               </Link>
             </Button>
-          <Button variant="outline" size="sm" onClick={onLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+            <Button variant="outline" size="sm" onClick={onLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
           </>
         ) : (
           <>

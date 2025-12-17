@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 export const NotificationDropdown = () => {
   const navigate = useNavigate();
-  const supportEmail = "Solely.kenya@gmail.com";
+  const supportEmail = "contact@solelyshoes.co.ke";
 
   const openSupport = () => {
     window.location.href = `mailto:${supportEmail}`;
@@ -47,8 +47,8 @@ export const NotificationDropdown = () => {
             <div className="flex flex-col">
               <span className="text-sm">Contact Support</span>
               <span className="text-xs text-muted-foreground">Email {supportEmail}</span>
-                </div>
-              </DropdownMenuItem>
+            </div>
+          </DropdownMenuItem>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

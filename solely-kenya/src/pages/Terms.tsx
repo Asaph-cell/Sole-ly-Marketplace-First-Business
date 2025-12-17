@@ -388,8 +388,8 @@ const Terms = () => {
                         <h3 className="text-lg font-semibold mb-2">Contact Us</h3>
                         <p className="text-muted-foreground">
                             For questions about these terms, contact us at{" "}
-                            <a href="mailto:Solely.kenya@gmail.com" className="text-primary underline">
-                                Solely.kenya@gmail.com
+                            <a href="mailto:contact@solelyshoes.co.ke" className="text-primary underline">
+                                contact@solelyshoes.co.ke
                             </a>
                         </p>
                     </section>

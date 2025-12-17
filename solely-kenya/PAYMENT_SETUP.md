@@ -177,4 +177,4 @@ Use sandbox M-Pesa numbers provided by Pesapal.
 For issues or questions:
 - Check Supabase Edge Function logs
 - Review Pesapal developer portal
-- Contact: Solely.kenya@gmail.com
+- Contact: contact@solelyshoes.co.ke

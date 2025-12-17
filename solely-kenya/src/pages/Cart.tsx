@@ -195,7 +195,7 @@ const Cart = () => {
                 <CardContent className="text-sm text-muted-foreground space-y-2">
                   <p>Every payment is held securely by Solely until you confirm delivery.</p>
                   <p>Full refunds on fraud, wrong or damaged deliveries.</p>
-                  <p>Need help? Email <a href="mailto:Solely.kenya@gmail.com" className="text-primary underline">Solely.kenya@gmail.com</a></p>
+                  <p>Need help? Email <a href="mailto:contact@solelyshoes.co.ke" className="text-primary underline">contact@solelyshoes.co.ke</a></p>
                 </CardContent>
               </Card>
             </div>

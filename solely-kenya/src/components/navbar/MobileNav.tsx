@@ -18,7 +18,7 @@ interface MobileNavProps {
 }
 
 export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, cartCount = 0 }: MobileNavProps) => {
-  const supportEmail = "Solely.kenya@gmail.com";
+  const supportEmail = "contact@solelyshoes.co.ke";
   return (
     <Sheet>
       <SheetTrigger asChild>
