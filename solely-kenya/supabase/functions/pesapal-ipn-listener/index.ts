@@ -150,7 +150,8 @@ serve(async (req) => {
                 console.log('Escrow transaction created for order:', orderId);
             }
 
-            // Notify vendor about new order (non-blocking)
+
+            // Notify vendor about new order
             try {
                 const { data: orderWithVendor } = await supabase
                     .from('orders')
@@ -159,23 +160,49 @@ serve(async (req) => {
                     .single();
 
                 if (orderWithVendor) {
-                    // Call notify function (fire and forget)
-                    fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/notify-vendor-new-order`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-                        },
-                        body: JSON.stringify({
+                    const notifyResult = await supabase.functions.invoke('notify-vendor-new-order', {
+                        body: {
                             orderId,
                             vendorId: orderWithVendor.vendor_id,
                             totalKsh: orderWithVendor.total_ksh,
-                        }),
-                    }).catch(err => console.log('Vendor notification failed (non-critical):', err));
+                        },
+                    });
+
+                    if (notifyResult.error) {
+                        console.error('Vendor notification FAILED:', notifyResult.error);
+                        // Still continue - don't block payment processing
+                    } else {
+                        console.log('Vendor notification sent successfully:', notifyResult.data);
+                    }
                 }
             } catch (notifyErr) {
-                console.log('Vendor notification skipped:', notifyErr);
+                console.error('Vendor notification error:', notifyErr);
+                // Non-blocking - payment already captured
             }
+
+            // Notify buyer that order was placed successfully
+            try {
+                const { data: orderWithCustomer } = await supabase
+                    .from('orders')
+                    .select('customer_id')
+                    .eq('id', orderId)
+                    .single();
+
+                if (orderWithCustomer) {
+                    const buyerNotifyResult = await supabase.functions.invoke('notify-buyer-order-placed', {
+                        body: { orderId },
+                    });
+
+                    if (buyerNotifyResult.error) {
+                        console.error('Buyer notification FAILED:', buyerNotifyResult.error);
+                    } else {
+                        console.log('Buyer order confirmation sent successfully');
+                    }
+                }
+            } catch (buyerNotifyErr) {
+                console.error('Buyer notification error:', buyerNotifyErr);
+            }
+
 
         } else if (pesapal.isPaymentFailed(transactionStatus)) {
             console.log('Payment FAILED for order:', orderId);
