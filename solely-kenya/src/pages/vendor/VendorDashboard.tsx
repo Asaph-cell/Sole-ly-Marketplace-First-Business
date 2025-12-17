@@ -102,27 +102,40 @@ const VendorDashboard = () => {
     const pendingOrdersCount = orders?.filter(o => o.status === 'pending_vendor_confirmation').length || 0;
     setRecentOrders(orders?.slice(0, 5) || []);
 
-    // Financials
+    // Financials - Calculate from completed orders for accurate real-time earnings
+    // Don't rely on payout status since payouts are created as 'pending' and not auto-updated
+    const completedOrders = orders?.filter(o =>
+      o.status === 'completed' || o.status === 'arrived'
+    ) || [];
+
+    const totalEarnings = completedOrders.reduce((sum, o) =>
+      sum + (o.payout_amount || 0), 0
+    );
+
+    // Still fetch payouts for additional info
     const { data: payouts } = await supabase
       .from("payouts")
       .select("amount_ksh, status")
       .eq("vendor_id", user?.id);
 
-    const totalIncome = (payouts || [])
+    const paidOut = (payouts || [])
       .filter((p: any) => p.status === 'paid')
       .reduce((sum: number, p: any) => sum + (p.amount_ksh || 0), 0);
 
-    const pendingBalance = (payouts || [])
+    const pendingPayouts = (payouts || [])
       .filter((p: any) => p.status === 'pending' || p.status === 'processing')
       .reduce((sum: number, p: any) => sum + (p.amount_ksh || 0), 0);
+
+    // Available balance = earnings from completed orders minus already paid out
+    const availableBalance = totalEarnings - paidOut;
 
     setStats({
       totalProducts: products?.length || 0,
       averageRating: Number(averageRating.toFixed(1)),
       totalViews,
       ordersReceived: ordersCount,
-      totalIncome,
-      pendingBalance,
+      totalIncome: totalEarnings,  // Total earnings from completed orders
+      pendingBalance: availableBalance,  // Not yet withdrawn
       pendingOrders: pendingOrdersCount
     });
   };
