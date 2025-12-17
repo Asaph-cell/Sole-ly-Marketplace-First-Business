@@ -76,39 +76,24 @@ export const OrderConfirmationModal = ({
 
         setSubmitting(true);
         try {
-            // 1. Update order status to completed
-            const { error: orderError } = await supabase
-                .from("orders")
-                .update({ status: "completed" })
-                .eq("id", orderId);
+            // Updated to use secure Edge Function which handles:
+            // 1. Order status -> completed
+            // 2. Escrow -> released
+            // 3. Payout -> Created (CRITICAL)
+            // 4. Vendor Rating -> Inserted
 
-            if (orderError) throw orderError;
-
-            // 2. Update escrow to released
-            const { error: escrowError } = await supabase
-                .from("escrow_transactions")
-                .update({ status: "released", released_at: new Date().toISOString() })
-                .eq("order_id", orderId);
-
-            if (escrowError) throw escrowError;
-
-            // 3. Add vendor rating
-            const { error: reviewError } = await supabase
-                .from("vendor_ratings")
-                .insert({
-                    order_id: orderId,
-                    buyer_id: customerId,
-                    vendor_id: vendorId,
+            const { data, error } = await supabase.functions.invoke('confirm-order', {
+                body: {
+                    orderId,
                     rating,
-                    review: feedback || null,
-                });
+                    review: feedback || null
+                }
+            });
 
-            // Note: Review error is non-critical, just log it
-            if (reviewError) {
-                console.warn("Review save warning:", reviewError);
-            }
+            if (error) throw new Error(error.message || "Failed to confirm order");
+            if (!data?.success) throw new Error(data?.error || "Failed to process confirmation");
 
-            toast.success("Order confirmed! Payment released to vendor. Thank you for your feedback!");
+            toast.success("Order confirmed! Payment released to vendor payment account. Thank you!");
             onSuccess();
             handleClose();
         } catch (error: any) {
