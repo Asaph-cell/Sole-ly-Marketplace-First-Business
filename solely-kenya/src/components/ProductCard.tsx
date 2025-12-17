@@ -43,7 +43,7 @@ const ProductCard = ({
       <Link to={`/product/${id}`} className="group">
         <Card className="h-full overflow-hidden border-2 hover:shadow-hover transition-shadow duration-300 bg-card flex flex-col">
           <CardContent className="p-0 relative">
-            <div className="aspect-square overflow-hidden bg-muted">
+            <div className="aspect-square overflow-hidden bg-white">
               <img
                 src={image}
                 alt={name}
