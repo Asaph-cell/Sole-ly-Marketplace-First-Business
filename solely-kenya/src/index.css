@@ -182,6 +182,76 @@ All colors MUST be HSL.
     @apply px-4 sm:px-6 lg:px-8;
   }
 
+  /* ==========================================
+     MOBILE RESPONSIVE FIX UTILITIES
+     ========================================== */
+
+  /* Fix Overflow - Ensure containers don't extend beyond viewport */
+  .fix-overflow {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Responsive Flex - Auto-wrap on mobile */
+  .responsive-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .responsive-flex {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .responsive-flex>* {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
+
+  /* Responsive Grid - Stacks to 1 column on mobile */
+  .responsive-grid {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .responsive-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* Responsive Button - Scales properly on mobile */
+  .responsive-button {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-button {
+      width: auto;
+      min-width: fit-content;
+    }
+  }
+
+  /* Full-width mobile utility */
+  .mobile-full-width {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-full-width {
+      width: auto;
+    }
+  }
+
   /* iOS safe area padding */
   @supports (padding: env(safe-area-inset-bottom)) {
     .safe-bottom {
@@ -264,5 +334,140 @@ All colors MUST be HSL.
   .floating-shoe,
   .hero-shimmer {
     animation: none;
+  }
+}
+
+/* ==========================================
+   GLOBAL MOBILE RESPONSIVE FIXES
+   Automatically fix common overflow issues
+   ========================================== */
+
+/* Force all elements to respect container bounds */
+*,
+*::before,
+*::after {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent images and media from overflowing */
+img,
+video,
+canvas,
+svg,
+iframe,
+embed,
+object {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Global button and input fixes - no fixed widths that break mobile */
+button,
+input,
+select,
+textarea,
+.btn,
+[role="button"] {
+  max-width: 100%;
+}
+
+/* Tables - allow horizontal scroll on mobile instead of breaking layout */
+table {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+@media (min-width: 640px) {
+  table {
+    display: table;
+  }
+}
+
+/* Pre/code blocks - prevent overflow */
+pre,
+code {
+  max-width: 100%;
+  overflow-x: auto;
+  word-wrap: break-word;
+}
+
+/* Long text - prevent overflow */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+span,
+a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile-specific fixes (screens < 640px) */
+@media (max-width: 639px) {
+
+  /* Force flex containers to wrap */
+  .flex {
+    flex-wrap: wrap !important;
+  }
+
+  /* Force buttons and inputs to full width when stacked */
+  .flex button,
+  .flex input[type="submit"],
+  .flex input[type="button"],
+  .flex .btn {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  /* Ensure grids stack properly */
+  .grid:not(.grid-cols-1):not(.grid-cols-2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ensure container padding */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Fix potential fixed-width elements */
+  [style*="width: 500"],
+  [style*="width: 600"],
+  [style*="width: 700"],
+  [style*="width: 800"],
+  [style*="width:500"],
+  [style*="width:600"],
+  [style*="width:700"],
+  [style*="width:800"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Ensure cards don't overflow */
+  .card,
+  [class*="Card"] {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Navigation flexbox - ensure wrapping */
+  nav .flex,
+  header .flex,
+  .navbar .flex,
+  .nav .flex {
+    flex-wrap: wrap !important;
+    gap: 0.5rem;
+  }
+
+  /* Horizontal scrolling elements - add touch scrolling */
+  [class*="overflow-x"],
+  [class*="scroll"] {
+    -webkit-overflow-scrolling: touch;
   }
 }
