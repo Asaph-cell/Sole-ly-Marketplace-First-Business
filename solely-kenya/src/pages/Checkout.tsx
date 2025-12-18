@@ -384,6 +384,49 @@ const Checkout = () => {
     <div className="min-h-screen bg-muted/20">
       <div className="container mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-6">
+          {/* Vendor Shop Location - Show prominently at top */}
+          {vendorProfile && (vendorProfile.store_name || vendorProfile.vendor_city || vendorProfile.vendor_address_line1) && (
+            <Card className="border-primary/40">
+              <CardContent className="pt-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Store className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-lg">Shop Location</h3>
+                  </div>
+                  {vendorProfile.store_name && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Store Name</p>
+                      <p className="text-base font-semibold">{vendorProfile.store_name}</p>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm">
+                        {vendorProfile.vendor_address_line1 && (
+                          <>{vendorProfile.vendor_address_line1}<br /></>
+                        )}
+                        {vendorProfile.vendor_address_line2 && (
+                          <>{vendorProfile.vendor_address_line2}<br /></>
+                        )}
+                        {vendorProfile.vendor_city && (
+                          <>{vendorProfile.vendor_city}{vendorProfile.vendor_county ? `, ${vendorProfile.vendor_county}` : ""}</>
+                        )}
+                        {!vendorProfile.vendor_address_line1 && !vendorProfile.vendor_city && (
+                          <span className="text-muted-foreground italic">Location details will be provided after order placement</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded border border-blue-200 dark:border-blue-800 mt-3">
+                    <p className="text-xs text-blue-900 dark:text-blue-100">
+                      💡 <strong>Tip:</strong> Choose "Pickup" below to collect from this location and save on delivery fees!
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Delivery or Pickup</CardTitle>
@@ -406,37 +449,12 @@ const Checkout = () => {
                 </label>
               </RadioGroup>
 
-              {deliveryType === "pickup" && vendorProfile && (
-                <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Store className="h-5 w-5 text-primary" />
-                        <h3 className="font-semibold text-lg">Vendor Shop Details</h3>
-                      </div>
-                      {vendorProfile.store_name && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Store Name</p>
-                          <p className="text-base font-semibold">{vendorProfile.store_name}</p>
-                        </div>
-                      )}
-                      {vendorProfile.store_description && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Description</p>
-                          <p className="text-sm">{vendorProfile.store_description}</p>
-                        </div>
-                      )}
-                      <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200 dark:border-yellow-800">
-                        <p className="text-xs text-yellow-900 dark:text-yellow-100">
-                          <strong>Important:</strong> You can contact the seller to arrange pickup time and location after placing your order. This ensures all transactions are completed through Solely's secure platform.
-                        </p>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Delivery charges will not apply for pickup orders. You'll be able to contact the seller once your order is placed.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+              {deliveryType === "pickup" && (
+                <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800 mt-3">
+                  <p className="text-sm text-green-900 dark:text-green-100">
+                    ✓ <strong>Pickup selected:</strong> No delivery fees. You'll contact the seller after placing your order to arrange pickup time.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
