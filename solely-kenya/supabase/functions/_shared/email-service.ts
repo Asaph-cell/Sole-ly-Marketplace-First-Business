@@ -11,69 +11,69 @@
  */
 
 interface EmailOptions {
-    to: string | string[];
-    subject: string;
-    html: string;
-    from?: string;
-    replyTo?: string;
+  to: string | string[];
+  subject: string;
+  html: string;
+  from?: string;
+  replyTo?: string;
 }
 
 interface EmailResult {
-    success: boolean;
-    id?: string;
-    error?: string;
+  success: boolean;
+  id?: string;
+  error?: string;
 }
 
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
-    if (!RESEND_API_KEY) {
-        console.warn("RESEND_API_KEY not set - email not sent");
-        return { success: false, error: "Email service not configured" };
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not set - email not sent");
+    return { success: false, error: "Email service not configured" };
+  }
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: options.from || "Solely Kenya <notifications@solely.co.ke>",
+        to: Array.isArray(options.to) ? options.to : [options.to],
+        subject: options.subject,
+        html: options.html,
+        reply_to: options.replyTo,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Resend API error:", data);
+      return { success: false, error: data.message || "Failed to send email" };
     }
 
-    try {
-        const response = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${RESEND_API_KEY}`,
-            },
-            body: JSON.stringify({
-                from: options.from || "Solely Kenya <notifications@solely.co.ke>",
-                to: Array.isArray(options.to) ? options.to : [options.to],
-                subject: options.subject,
-                html: options.html,
-                reply_to: options.replyTo,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Resend API error:", data);
-            return { success: false, error: data.message || "Failed to send email" };
-        }
-
-        console.log("Email sent successfully:", data.id);
-        return { success: true, id: data.id };
-    } catch (error) {
-        console.error("Email send error:", error);
-        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
-    }
+    console.log("Email sent successfully:", data.id);
+    return { success: true, id: data.id };
+  } catch (error) {
+    console.error("Email send error:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+  }
 }
 
 // Email templates
 export const emailTemplates = {
-    vendorNewOrder: (data: {
-        businessName: string;
-        orderId: string;
-        items: string;
-        total: number;
-        deliveryLocation: string;
-        customerName: string;
-        dashboardUrl: string;
-    }) => `
+  vendorNewOrder: (data: {
+    businessName: string;
+    orderId: string;
+    items: string;
+    total: number;
+    deliveryLocation: string;
+    customerName: string;
+    dashboardUrl: string;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -120,14 +120,14 @@ export const emailTemplates = {
     </html>
   `,
 
-    buyerOrderDeclined: (data: {
-        customerName: string;
-        orderId: string;
-        items: string;
-        total: number;
-        vendorName: string;
-        reason?: string;
-    }) => `
+  buyerOrderDeclined: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    total: number;
+    vendorName: string;
+    reason?: string;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -173,12 +173,12 @@ export const emailTemplates = {
     </html>
   `,
 
-    buyerOrderAutoDeclined: (data: {
-        customerName: string;
-        orderId: string;
-        items: string;
-        total: number;
-    }) => `
+  buyerOrderAutoDeclined: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    total: number;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -221,15 +221,15 @@ export const emailTemplates = {
     </html>
   `,
 
-    // NEW: Order Placed Confirmation
-    buyerOrderPlaced: (data: {
-        customerName: string;
-        orderId: string;
-        items: string;
-        total: number;
-        deliveryType: string;
-        orderTrackingUrl: string;
-    }) => `
+  // NEW: Order Placed Confirmation
+  buyerOrderPlaced: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    total: number;
+    deliveryType: string;
+    orderTrackingUrl: string;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -285,14 +285,14 @@ export const emailTemplates = {
     </html>
   `,
 
-    // NEW: Order Accepted by Vendor
-    buyerOrderAccepted: (data: {
-        customerName: string;
-        orderId: string;
-        items: string;
-        vendorName: string;
-        estimatedShipDate: string;
-    }) => `
+  // NEW: Order Accepted by Vendor
+  buyerOrderAccepted: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    vendorName: string;
+    estimatedShipDate: string;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -333,17 +333,17 @@ export const emailTemplates = {
     </html>
   `,
 
-    // NEW: Order Shipped with Tracking
-    buyerOrderShipped: (data: {
-        customerName: string;
-        orderId: string;
-        items: string;
-        vendorName: string;
-        courierName: string;
-        trackingNumber: string;
-        deliveryNotes: string;
-        orderTrackingUrl: string;
-    }) => `
+  // NEW: Order Shipped with Tracking
+  buyerOrderShipped: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    vendorName: string;
+    courierName: string;
+    trackingNumber: string;
+    deliveryNotes: string;
+    orderTrackingUrl: string;
+  }) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -392,6 +392,221 @@ export const emailTemplates = {
         <div class="footer">
           <p>This email was sent by Solely Kenya</p>
           <p>Questions? Reply to this email or contact support.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
+  // NEW: Pickup Ready Notification
+  buyerPickupReady: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    vendorName: string;
+    vendorAddress: string;
+    vendorPhone: string;
+    vendorWhatsApp: string;
+  }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f9faf";
+        .order-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .location-box { background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .contact-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .contact-button { display: inline-block; background: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; flex: 1; text-align: center; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">📦 Your Order is Ready for Pickup!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${data.customerName},</p>
+          <p>Great news! Your order from <strong>${data.vendorName}</strong> is ready for collection.</p>
+          
+          <div class="order-details">
+            <p><strong>Order #${data.orderId}</strong></p>
+            <p><strong>Items:</strong> ${data.items}</p>
+          </div>
+          
+          <div class="location-box">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">📍 Pickup Location:</p>
+            <p style="margin: 0;">${data.vendorAddress}</p>
+          </div>
+          
+          <p><strong>Contact the seller to arrange pickup time:</strong></p>
+          <div class="contact-buttons">
+            <a href="https://wa.me/${data.vendorWhatsApp.replace(/[^0-9]/g, '')}" class="contact-button" style="background: #25D366;">
+              WhatsApp
+            </a>
+            <a href="tel:${data.vendorPhone}" class="contact-button" style="background: #3b82f6;">
+              Call
+            </a>
+          </div>
+          
+          <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Remember to confirm delivery on Solely after you collect your order to release payment to the vendor.</p>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Solely Kenya</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
+  // NEW: Order Completed - Review Request
+  buyerOrderCompleted: (data: {
+    customerName: string;
+    orderId: string;
+    items: string;
+    reviewUrl: string;
+  }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .order-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .cta-button { display: inline-block; background: #10b981; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; margin-top: 15px; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">✅ Order Completed - Thank You!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${data.customerName},</p>
+          <p>Your order has been completed successfully! We hope you love your purchase.</p>
+          
+          <div class="order-details">
+            <p><strong>Order #${data.orderId}</strong></p>
+            <p><strong>Items:</strong> ${data.items}</p>
+          </div>
+          
+          <p><strong>How was your experience?</strong></p>
+          <p>Your feedback helps other buyers make informed decisions and helps vendors improve their service.</p>
+          
+          <div style="text-align: center;">
+            <a href="${data.reviewUrl}" class="cta-button">Leave a Review</a>
+          </div>
+          
+          <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Thank you for shopping with Solely Kenya!</p>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Solely Kenya</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
+  // NEW: Vendor Payment Released
+  vendorPaymentReleased: (data: {
+    vendorName: string;
+    orderId: string;
+    payoutAmount: number;
+  }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .payment-box { background: #d1fae5; border: 2px solid #10b981; padding: 20px; border-radius: 8px; margin: 15px 0; text-align: center; }
+        .amount { font-size: 36px; font-weight: bold; color: #059669; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">💰 Payment Released!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${data.vendorName},</p>
+          <p>Great news! The buyer has confirmed delivery for order #${data.orderId}.</p>
+          
+          <div class="payment-box">
+            <p style="margin: 0 0 10px 0; color: #6b7280;">Funds Released</p>
+            <p class="amount">KES ${data.payoutAmount.toLocaleString()}</p>
+          </div>
+          
+          <p>The funds have been released from escrow and will be processed for payout according to your payment schedule.</p>
+          <p style="font-size: 14px; color: #6b7280;">Thank you for providing excellent service to your buyers!</p>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Solely Kenya</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
+  // NEW: Dispute Filed
+  disputeFiled: (data: {
+    userName: string;
+    orderId: string;
+    reason: string;
+    description: string;
+    isVendor: boolean;
+  }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc2626; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .dispute-box { background: #fee2e2; border: 2px solid #dc2626; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .info-box { background: #e0f2fe; border: 1px solid #0284c7; padding: 12px; border-radius: 6px; margin-top: 15px; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">⚠️ Dispute Filed</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${data.userName},</p>
+          <p>${data.isVendor ? 'A buyer has filed a dispute' : 'Your dispute has been submitted'} for order #${data.orderId}.</p>
+          
+          <div class="dispute-box">
+            <p><strong>Reason:</strong> ${data.reason}</p>
+            <p><strong>Description:</strong> ${data.description}</p>
+          </div>
+          
+          <div class="info-box">
+            <strong>What happens next?</strong>
+            <ol style="margin: 10px 0; padding-left: 20px;">
+              <li>Solely support team will review the dispute</li>
+              <li>${data.isVendor ? 'We may contact you for additional information' : 'The vendor will be notified'}</li>
+              <li>Funds are frozen until resolution</li>
+              <li>Admin will make a final decision and notify both parties</li>
+            </ol>
+          </div>
+          
+          <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Our support team aims to resolve disputes within 3-5 business days.</p>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Solely Kenya</p>
+          <p>If you have additional information, please reply to this email.</p>
         </div>
       </div>
     </body>
