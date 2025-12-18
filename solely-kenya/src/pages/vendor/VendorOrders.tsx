@@ -648,7 +648,9 @@ const VendorOrders = () => {
                         Placed {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                       </p>
                     </div>
-                    <Badge variant={badgeVariant}>{order.status.replace(/_/g, " ")}</Badge>
+                    <Badge variant={badgeVariant}>
+                      {isPickup && order.status === "arrived" ? "Ready for Pickup" : order.status.replace(/_/g, " ")}
+                    </Badge>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2 text-sm">
@@ -834,16 +836,28 @@ const VendorOrders = () => {
 
                     {order.status === "arrived" && (
                       <div className="bg-muted rounded-lg p-4 text-sm">
-                        <p className="font-semibold mb-2">Arrived {order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}</p>
+                        <p className="font-semibold mb-2">
+                          {isPickup
+                            ? `Ready for Pickup (Marked ${order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"})`
+                            : `Arrived ${order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}`
+                          }
+                        </p>
                         {order.order_shipping_details?.courier_name && (
                           <p>Courier: {order.order_shipping_details.courier_name}</p>
                         )}
                         {order.order_shipping_details?.tracking_number && (
                           <p>Tracking: {order.order_shipping_details.tracking_number}</p>
                         )}
-                        <p className="text-muted-foreground mt-2">
-                          Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "24 hours after arrival (delivery orders only)"}.
-                        </p>
+                        {!isPickup && (
+                          <p className="text-muted-foreground mt-2">
+                            Escrow auto-release scheduled for {order.auto_release_at ? new Date(order.auto_release_at).toLocaleString() : "24 hours after arrival"}.
+                          </p>
+                        )}
+                        {isPickup && (
+                          <p className="text-muted-foreground mt-2">
+                            Buyer has been notified. Waiting for them to collect and confirm.
+                          </p>
+                        )}
                       </div>
                     )}
                   </CardContent>
