@@ -15,7 +15,7 @@ import { LocationPinMap } from "@/components/LocationPinMap";
 import { calculateDeliveryFee } from "@/utils/deliveryPricing";
 
 const paymentOptions = [
-  { value: "pesapal", label: "Pay with Pesapal", icon: "💳", description: "M-Pesa, Cards, Airtel Money" },
+  { value: "intrasend", label: "Pay with M-Pesa / Card", icon: "💳", description: "Secure payment via IntraSend" },
 ];
 
 const Checkout = () => {
@@ -24,7 +24,7 @@ const Checkout = () => {
   const { user, loading: authLoading } = useAuth();
 
   const [processing, setProcessing] = useState(false);
-  const [paymentGateway, setPaymentGateway] = useState<string>("pesapal");
+  const [paymentGateway, setPaymentGateway] = useState<string>("intrasend");
   const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">("delivery");
   const [vendorProfile, setVendorProfile] = useState<any>(null);
   const [vendorCounty, setVendorCounty] = useState<string | null>(null);
@@ -301,7 +301,7 @@ const Checkout = () => {
         .from("payments")
         .insert({
           order_id: order.id,
-          gateway: paymentGateway as "mpesa" | "card" | "paypal" | "flutterwave",
+          gateway: "mpesa", // Defaulting to mpesa/intrasend for now. 'gateway' enum might need 'intrasend' update in DB or just use 'mpesa' as generic.
           status: "pending",
           amount_ksh: total,
           currency: "KES",
@@ -317,39 +317,35 @@ const Checkout = () => {
         throw new Error(paymentError?.message || "Failed to create payment record");
       }
 
-      // Process Pesapal payment - redirect to Pesapal checkout page
-      const { data: pesapalResponse, error: pesapalError } = await supabase.functions.invoke("pesapal-initiate-payment", {
+      // Process IntraSend payment
+      const { data: intraSendResponse, error: intraSendError } = await supabase.functions.invoke("intrasend-initiate-payment", {
         body: {
           orderId: order.id,
-          cancellationUrl: `${window.location.origin}/orders/${order.id}?cancelled=true`,
+          successUrl: `${window.location.origin}/orders/${order.id}?payment_success=true`,
+          cancelUrl: `${window.location.origin}/orders/${order.id}?cancelled=true`,
         },
       });
 
-      if (pesapalError) {
+      if (intraSendError) {
         // Rollback everything
         await supabase.from("payments").delete().eq("id", payment.id);
         await supabase.from("order_shipping_details").delete().eq("order_id", order.id);
         await supabase.from("order_items").delete().eq("order_id", order.id);
         await supabase.from("orders").delete().eq("id", order.id);
 
-        // Check if function is not deployed
-        if (pesapalError.message?.includes("Failed to send a request") || pesapalError.message?.includes("Function not found")) {
-          throw new Error("Pesapal payment function is not deployed. Please deploy the 'pesapal-initiate-payment' Edge Function.");
-        }
-
-        console.error("Pesapal payment error:", pesapalError);
-        throw new Error(pesapalError.message || "Failed to initiate payment. Please try again.");
+        console.error("IntraSend payment error:", intraSendError);
+        throw new Error(intraSendError.message || "Failed to initiate payment. Please try again.");
       }
 
-      if (!pesapalResponse?.success || !pesapalResponse?.redirectUrl) {
+      if (!intraSendResponse?.success || !intraSendResponse?.url) {
         // Rollback everything
         await supabase.from("payments").delete().eq("id", payment.id);
         await supabase.from("order_shipping_details").delete().eq("order_id", order.id);
         await supabase.from("order_items").delete().eq("order_id", order.id);
         await supabase.from("orders").delete().eq("id", order.id);
 
-        const errorMsg = pesapalResponse?.error || "Failed to initiate payment";
-        console.error("Pesapal payment error:", pesapalResponse);
+        const errorMsg = intraSendResponse?.error || "Failed to initiate payment";
+        console.error("IntraSend payment error:", intraSendResponse);
         throw new Error(errorMsg);
       }
 
@@ -360,15 +356,13 @@ const Checkout = () => {
 
       // Clear cart before redirecting
       clearCart();
-      toast.success("Opening secure payment page in new tab...");
+      toast.success("Opening secure payment page...");
 
-      // Open Pesapal payment page in a new tab
-      // This allows the user to go back and retry if payment fails (insufficient funds, etc.)
-      window.open(pesapalResponse.redirectUrl, '_blank');
+      // Redirect to IntraSend
+      window.location.href = intraSendResponse.url;
 
-      // Navigate to orders page so user can track their order
-      toast.info("Complete your payment in the new tab. If payment fails, you can retry from your Orders page.");
-      navigate('/orders');
+      // We don't navigate to /orders here because we are redirecting the whole page to IntraSend. 
+      // The user will return to /orders/:id via the successUrl.
     } catch (error) {
       console.error("Checkout error", error);
       const errorMessage = error instanceof Error
@@ -584,10 +578,10 @@ const Checkout = () => {
                 ))}
               </RadioGroup>
 
-              {paymentGateway === "pesapal" && (
+              {paymentGateway === "intrasend" && (
                 <div className="pt-4 border-t">
                   <p className="text-sm text-muted-foreground">
-                    You'll be redirected to Pesapal's secure checkout page to complete payment using M-Pesa, Visa, Mastercard, or Airtel Money.
+                    You'll be redirected to IntraSend's secure checkout page to complete payment using M-Pesa or Card.
                   </p>
                 </div>
               )}
