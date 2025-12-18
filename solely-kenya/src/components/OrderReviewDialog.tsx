@@ -232,11 +232,10 @@ export const OrderReviewDialog = ({
                           className="transition-transform hover:scale-110"
                         >
                           <Star
-                            className={`h-6 w-6 ${
-                              star <= (hoveredProductRating[item.product_id] || currentRating)
+                            className={`h-6 w-6 ${star <= (hoveredProductRating[item.product_id] || currentRating)
                                 ? "fill-yellow-400 text-yellow-400"
                                 : "text-muted-foreground"
-                            }`}
+                              }`}
                           />
                         </button>
                       ))}
@@ -290,11 +289,10 @@ export const OrderReviewDialog = ({
                       className="transition-transform hover:scale-110"
                     >
                       <Star
-                        className={`h-6 w-6 ${
-                          star <= (hoveredVendorRating || vendorRating)
+                        className={`h-6 w-6 ${star <= (hoveredVendorRating || vendorRating)
                             ? "fill-yellow-400 text-yellow-400"
                             : "text-muted-foreground"
-                        }`}
+                          }`}
                       />
                     </button>
                   ))}
@@ -326,7 +324,12 @@ export const OrderReviewDialog = ({
               Cancel
             </Button>
             <Button onClick={handleSubmit} disabled={submitting} className="flex-1">
-              {submitting ? "Submitting..." : "Submit Reviews"}
+              {submitting
+                ? "Submitting..."
+                : Object.keys(existingReviews.products).length > 0 ||
+                  existingReviews.vendor
+                  ? "Update Reviews"
+                  : "Submit Reviews"}
             </Button>
           </div>
         </div>

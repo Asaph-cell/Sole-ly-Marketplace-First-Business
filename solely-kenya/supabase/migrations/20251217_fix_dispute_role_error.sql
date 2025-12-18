@@ -41,7 +41,7 @@ CREATE POLICY "Admins can view all disputes"
 ON disputes
 FOR SELECT
 USING (
-  public.has_role(auth.uid(), 'admin')
+  public.has_role(auth.uid(), 'admin'::app_role)
 );
 
 -- Admins can update all disputes
@@ -50,7 +50,7 @@ CREATE POLICY "Admins can update all disputes"
 ON disputes
 FOR UPDATE
 USING (
-  public.has_role(auth.uid(), 'admin')
+  public.has_role(auth.uid(), 'admin'::app_role)
 );
 
 DO $$

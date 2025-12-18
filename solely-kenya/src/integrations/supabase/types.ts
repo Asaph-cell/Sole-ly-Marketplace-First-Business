@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      commission_ledger: {
+        Row: {
+          commission_amount: number
+          commission_rate: number
+          id: string
+          notes: string | null
+          order_id: string
+          recorded_at: string
+          vendor_id: string
+        }
+        Insert: {
+          commission_amount: number
+          commission_rate: number
+          id?: string
+          notes?: string | null
+          order_id: string
+          recorded_at?: string
+          vendor_id: string
+        }
+        Update: {
+          commission_amount?: number
+          commission_rate?: number
+          id?: string
+          notes?: string | null
+          order_id?: string
+          recorded_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_ledger_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commission_ledger_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           buyer_id: string | null
@@ -37,7 +82,131 @@ export type Database = {
           vendor_id?: string
         }
         Relationships: []
-      },
+      }
+      disputes: {
+        Row: {
+          customer_id: string
+          description: string | null
+          evidence_urls: string[] | null
+          id: string
+          opened_at: string
+          order_id: string
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: Database["public"]["Enums"]["dispute_status"]
+          vendor_id: string
+        }
+        Insert: {
+          customer_id: string
+          description?: string | null
+          evidence_urls?: string[] | null
+          id?: string
+          opened_at?: string
+          order_id: string
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["dispute_status"]
+          vendor_id: string
+        }
+        Update: {
+          customer_id?: string
+          description?: string | null
+          evidence_urls?: string[] | null
+          id?: string
+          opened_at?: string
+          order_id?: string
+          reason?: Database["public"]["Enums"]["dispute_reason"]
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["dispute_status"]
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_transactions: {
+        Row: {
+          commission_amount: number
+          created_at: string
+          held_amount: number
+          id: string
+          notes: string | null
+          order_id: string
+          payment_id: string
+          refunded_at: string | null
+          release_amount: number
+          released_at: string | null
+          status: Database["public"]["Enums"]["escrow_status"]
+        }
+        Insert: {
+          commission_amount: number
+          created_at?: string
+          held_amount: number
+          id?: string
+          notes?: string | null
+          order_id: string
+          payment_id: string
+          refunded_at?: string | null
+          release_amount: number
+          released_at?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+        }
+        Update: {
+          commission_amount?: number
+          created_at?: string
+          held_amount?: number
+          id?: string
+          notes?: string | null
+          order_id?: string
+          payment_id?: string
+          refunded_at?: string | null
+          release_amount?: number
+          released_at?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mpesa_transactions: {
         Row: {
           amount: number
@@ -122,38 +291,130 @@ export type Database = {
         }
         Relationships: []
       }
-      price_alerts: {
+      order_items: {
         Row: {
           id: string
-          user_id: string
+          line_total_ksh: number
+          order_id: string
           product_id: string
-          target_price: number | null
-          original_price: number
-          created_at: string | null
-          notified_at: string | null
-          is_active: boolean
+          product_name: string
+          product_snapshot: Json
+          quantity: number
+          size: string | null
+          unit_price_ksh: number
         }
         Insert: {
           id?: string
-          user_id: string
+          line_total_ksh: number
+          order_id: string
           product_id: string
-          target_price?: number | null
-          original_price: number
-          created_at?: string | null
-          notified_at?: string | null
-          is_active?: boolean
+          product_name: string
+          product_snapshot: Json
+          quantity: number
+          size?: string | null
+          unit_price_ksh: number
         }
         Update: {
           id?: string
-          user_id?: string
+          line_total_ksh?: number
+          order_id?: string
           product_id?: string
-          target_price?: number | null
-          original_price?: number
-          created_at?: string | null
-          notified_at?: string | null
-          is_active?: boolean
+          product_name?: string
+          product_snapshot?: Json
+          quantity?: number
+          size?: string | null
+          unit_price_ksh?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_shipping_details: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string
+          county: string | null
+          courier_name: string | null
+          created_at: string
+          delivery_notes: string | null
+          delivery_type: string | null
+          email: string | null
+          gps_latitude: number | null
+          gps_longitude: number | null
+          order_id: string
+          phone: string
+          postal_code: string | null
+          recipient_name: string
+          shipment_proof_url: string | null
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          county?: string | null
+          courier_name?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          delivery_type?: string | null
+          email?: string | null
+          gps_latitude?: number | null
+          gps_longitude?: number | null
+          order_id: string
+          phone: string
+          postal_code?: string | null
+          recipient_name: string
+          shipment_proof_url?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          county?: string | null
+          courier_name?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          delivery_type?: string | null
+          email?: string | null
+          gps_latitude?: number | null
+          gps_longitude?: number | null
+          order_id?: string
+          phone?: string
+          postal_code?: string | null
+          recipient_name?: string
+          shipment_proof_url?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_shipping_details_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -227,10 +488,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "orders_dispute_id_fkey"
-            columns: ["dispute_id"]
-            isOneToOne: true
-            referencedRelation: "disputes"
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -241,117 +502,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      },
-      order_items: {
-        Row: {
-          id: string
-          line_total_ksh: number
-          order_id: string
-          product_id: string
-          product_name: string
-          product_snapshot: Json
-          quantity: number
-          unit_price_ksh: number
-        }
-        Insert: {
-          id?: string
-          line_total_ksh: number
-          order_id: string
-          product_id: string
-          product_name: string
-          product_snapshot: Json
-          quantity: number
-          unit_price_ksh: number
-        }
-        Update: {
-          id?: string
-          line_total_ksh?: number
-          order_id?: string
-          product_id?: string
-          product_name?: string
-          product_snapshot?: Json
-          quantity?: number
-          unit_price_ksh?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_items_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
-      order_shipping_details: {
-        Row: {
-          address_line1: string
-          address_line2: string | null
-          city: string
-          country: string
-          courier_name: string | null
-          created_at: string
-          delivery_notes: string | null
-          email: string | null
-          order_id: string
-          phone: string
-          postal_code: string | null
-          recipient_name: string
-          shipment_proof_url: string | null
-          tracking_number: string | null
-          updated_at: string
-        }
-        Insert: {
-          address_line1: string
-          address_line2?: string | null
-          city: string
-          country?: string
-          courier_name?: string | null
-          created_at?: string
-          delivery_notes?: string | null
-          email?: string | null
-          order_id: string
-          phone: string
-          postal_code?: string | null
-          recipient_name: string
-          shipment_proof_url?: string | null
-          tracking_number?: string | null
-          updated_at?: string
-        }
-        Update: {
-          address_line1?: string
-          address_line2?: string | null
-          city?: string
-          country?: string
-          courier_name?: string | null
-          created_at?: string
-          delivery_notes?: string | null
-          email?: string | null
-          order_id?: string
-          phone?: string
-          postal_code?: string | null
-          recipient_name?: string
-          shipment_proof_url?: string | null
-          tracking_number?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_shipping_details_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: true
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
+      }
       payments: {
         Row: {
           amount_ksh: number
@@ -401,64 +552,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      },
-      escrow_transactions: {
-        Row: {
-          commission_amount: number
-          created_at: string
-          held_amount: number
-          id: string
-          notes: string | null
-          order_id: string
-          payment_id: string
-          release_amount: number
-          released_at: string | null
-          refunded_at: string | null
-          status: Database["public"]["Enums"]["escrow_status"]
-        }
-        Insert: {
-          commission_amount: number
-          created_at?: string
-          held_amount: number
-          id?: string
-          notes?: string | null
-          order_id: string
-          payment_id: string
-          release_amount: number
-          released_at?: string | null
-          refunded_at?: string | null
-          status?: Database["public"]["Enums"]["escrow_status"]
-        }
-        Update: {
-          commission_amount?: number
-          created_at?: string
-          held_amount?: number
-          id?: string
-          notes?: string | null
-          order_id?: string
-          payment_id?: string
-          release_amount?: number
-          released_at?: string | null
-          refunded_at?: string | null
-          status?: Database["public"]["Enums"]["escrow_status"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "escrow_transactions_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "escrow_transactions_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: false
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
+      }
       payouts: {
         Row: {
           amount_ksh: number
@@ -521,112 +615,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      },
-      disputes: {
+      }
+      pesapal_config: {
         Row: {
-          customer_id: string
-          description: string | null
-          evidence_urls: string[] | null
+          auth_token: string | null
+          created_at: string | null
           id: string
-          opened_at: string
-          order_id: string
-          reason: Database["public"]["Enums"]["dispute_reason"]
-          resolved_at: string | null
-          resolved_by: string | null
-          resolution_notes: string | null
-          status: Database["public"]["Enums"]["dispute_status"]
-          vendor_id: string
+          ipn_id: string | null
+          ipn_notification_type: string | null
+          sandbox_mode: boolean | null
+          token_expiry: string | null
+          updated_at: string | null
         }
         Insert: {
-          customer_id: string
-          description?: string | null
-          evidence_urls?: string[] | null
+          auth_token?: string | null
+          created_at?: string | null
           id?: string
-          opened_at?: string
-          order_id: string
-          reason: Database["public"]["Enums"]["dispute_reason"]
-          resolved_at?: string | null
-          resolved_by?: string | null
-          resolution_notes?: string | null
-          status?: Database["public"]["Enums"]["dispute_status"]
-          vendor_id: string
+          ipn_id?: string | null
+          ipn_notification_type?: string | null
+          sandbox_mode?: boolean | null
+          token_expiry?: string | null
+          updated_at?: string | null
         }
         Update: {
-          customer_id?: string
-          description?: string | null
-          evidence_urls?: string[] | null
+          auth_token?: string | null
+          created_at?: string | null
           id?: string
-          opened_at?: string
-          order_id?: string
-          reason?: Database["public"]["Enums"]["dispute_reason"]
-          resolved_at?: string | null
-          resolved_by?: string | null
-          resolution_notes?: string | null
-          status?: Database["public"]["Enums"]["dispute_status"]
-          vendor_id?: string
+          ipn_id?: string | null
+          ipn_notification_type?: string | null
+          sandbox_mode?: boolean | null
+          token_expiry?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      price_alerts: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          notified_at: string | null
+          original_price: number
+          product_id: string
+          target_price: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notified_at?: string | null
+          original_price: number
+          product_id: string
+          target_price?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notified_at?: string | null
+          original_price?: number
+          product_id?: string
+          target_price?: number | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "disputes_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: true
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "disputes_vendor_id_fkey"
-            columns: ["vendor_id"]
+            foreignKeyName: "price_alerts_product_id_fkey"
+            columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
-      },
-      commission_ledger: {
-        Row: {
-          commission_amount: number
-          commission_rate: number
-          id: string
-          notes: string | null
-          order_id: string
-          recorded_at: string
-          vendor_id: string
-        }
-        Insert: {
-          commission_amount: number
-          commission_rate: number
-          id?: string
-          notes?: string | null
-          order_id: string
-          recorded_at?: string
-          vendor_id: string
-        }
-        Update: {
-          commission_amount?: number
-          commission_rate?: number
-          id?: string
-          notes?: string | null
-          order_id?: string
-          recorded_at?: string
-          vendor_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "commission_ledger_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "commission_ledger_vendor_id_fkey"
-            columns: ["vendor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
+      }
       product_views: {
         Row: {
           id: string
@@ -662,8 +725,11 @@ export type Database = {
       }
       products: {
         Row: {
+          accessory_type: string | null
           brand: string | null
           category: string | null
+          condition: string | null
+          condition_notes: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -679,8 +745,11 @@ export type Database = {
           views: number | null
         }
         Insert: {
+          accessory_type?: string | null
           brand?: string | null
           category?: string | null
+          condition?: string | null
+          condition_notes?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -696,8 +765,11 @@ export type Database = {
           views?: number | null
         }
         Update: {
+          accessory_type?: string | null
           brand?: string | null
           category?: string | null
+          condition?: string | null
+          condition_notes?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -717,32 +789,53 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null
+          email: string | null
           full_name: string | null
           id: string
+          mpesa_number: string | null
           store_description: string | null
           store_logo_url: string | null
           store_name: string | null
           updated_at: string | null
+          vendor_address_line1: string | null
+          vendor_address_line2: string | null
+          vendor_city: string | null
+          vendor_county: string | null
+          vendor_postal_code: string | null
           whatsapp_number: string | null
         }
         Insert: {
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           id: string
+          mpesa_number?: string | null
           store_description?: string | null
           store_logo_url?: string | null
           store_name?: string | null
           updated_at?: string | null
+          vendor_address_line1?: string | null
+          vendor_address_line2?: string | null
+          vendor_city?: string | null
+          vendor_county?: string | null
+          vendor_postal_code?: string | null
           whatsapp_number?: string | null
         }
         Update: {
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           id?: string
+          mpesa_number?: string | null
           store_description?: string | null
           store_logo_url?: string | null
           store_name?: string | null
           updated_at?: string | null
+          vendor_address_line1?: string | null
+          vendor_address_line2?: string | null
+          vendor_city?: string | null
+          vendor_county?: string | null
+          vendor_postal_code?: string | null
           whatsapp_number?: string | null
         }
         Relationships: []
@@ -752,6 +845,7 @@ export type Database = {
           comment: string | null
           created_at: string | null
           id: string
+          order_id: string | null
           product_id: string
           rating: number
           reviewer_name: string
@@ -762,6 +856,7 @@ export type Database = {
           comment?: string | null
           created_at?: string | null
           id?: string
+          order_id?: string | null
           product_id: string
           rating: number
           reviewer_name: string
@@ -772,6 +867,7 @@ export type Database = {
           comment?: string | null
           created_at?: string | null
           id?: string
+          order_id?: string | null
           product_id?: string
           rating?: number
           reviewer_name?: string
@@ -784,6 +880,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
           {
@@ -897,14 +1000,20 @@ export type Database = {
     }
     Functions: {
       assign_admin_role: { Args: { _user_email: string }; Returns: undefined }
-      check_subscription_expiry: { Args: never; Returns: undefined }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
+      assign_role: {
+        Args: { role_name: string; user_uuid: string }
+        Returns: undefined
       }
+      check_subscription_expiry: { Args: never; Returns: undefined }
+      has_role:
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
+        | { Args: { role_name: string; user_id: string }; Returns: boolean }
       publish_product: {
         Args: { product_id_to_publish: string }
         Returns: undefined
@@ -914,17 +1023,32 @@ export type Database = {
       app_role: "admin" | "vendor" | "user"
       dispute_reason: "no_delivery" | "wrong_item" | "damaged" | "other"
       dispute_status:
-      | "open"
-      | "under_review"
-      | "resolved_refund"
-      | "resolved_release"
-      | "closed"
+        | "open"
+        | "under_review"
+        | "resolved_refund"
+        | "resolved_release"
+        | "closed"
       escrow_status: "held" | "released" | "refunded" | "withheld"
-      order_status: "pending" | "pending_vendor_confirmation" | "accepted" | "shipped" | "arrived" | "delivered" | "completed" | "cancelled" | "disputed" | "refunded" | "cancelled_by_vendor" | "cancelled_by_customer"
+      order_status:
+        | "pending_vendor_confirmation"
+        | "accepted"
+        | "shipped"
+        | "delivered"
+        | "completed"
+        | "disputed"
+        | "cancelled_by_vendor"
+        | "cancelled_by_customer"
+        | "refunded"
+        | "arrived"
+      payment_gateway: "mpesa" | "card" | "paypal" | "flutterwave" | "pesapal"
+      payment_status:
+        | "pending"
+        | "authorized"
+        | "captured"
+        | "refunded"
+        | "chargeback"
       payout_method: "mpesa" | "bank"
       payout_status: "pending" | "processing" | "paid" | "failed"
-      payment_gateway: "mpesa" | "card" | "paypal" | "flutterwave"
-      payment_status: "pending" | "authorized" | "captured" | "refunded" | "chargeback"
       product_status: "active" | "out_of_stock" | "draft"
       subscription_plan: "starter" | "growth" | "pro" | "unlimited"
     }
@@ -940,122 +1064,152 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-  : never = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-  ? R
-  : never
+    ? R
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : never
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
+      Insert: infer I
+    }
+    ? I
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U
-  }
-  ? U
-  : never
+      Update: infer U
+    }
+    ? U
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema["Enums"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema["CompositeTypes"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "vendor", "user"],
-      order_status: ["pending", "confirmed", "completed", "cancelled"],
+      dispute_reason: ["no_delivery", "wrong_item", "damaged", "other"],
+      dispute_status: [
+        "open",
+        "under_review",
+        "resolved_refund",
+        "resolved_release",
+        "closed",
+      ],
+      escrow_status: ["held", "released", "refunded", "withheld"],
+      order_status: [
+        "pending_vendor_confirmation",
+        "accepted",
+        "shipped",
+        "delivered",
+        "completed",
+        "disputed",
+        "cancelled_by_vendor",
+        "cancelled_by_customer",
+        "refunded",
+        "arrived",
+      ],
+      payment_gateway: ["mpesa", "card", "paypal", "flutterwave", "pesapal"],
+      payment_status: [
+        "pending",
+        "authorized",
+        "captured",
+        "refunded",
+        "chargeback",
+      ],
+      payout_method: ["mpesa", "bank"],
+      payout_status: ["pending", "processing", "paid", "failed"],
       product_status: ["active", "out_of_stock", "draft"],
       subscription_plan: ["starter", "growth", "pro", "unlimited"],
     },
