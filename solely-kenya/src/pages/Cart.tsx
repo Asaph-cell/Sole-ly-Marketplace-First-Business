@@ -28,7 +28,12 @@ const Cart = () => {
     }
 
     // Check if all items have sizes selected
-    if (!hasAllSizes()) {
+    // Check if any item needs a size but doesn't have one
+    const missingSizes = items.some(
+      (item) => item.availableSizes && item.availableSizes.length > 0 && !item.size
+    );
+
+    if (missingSizes) {
       toast.error("Please select a shoe size for all items before checkout");
       return;
     }
