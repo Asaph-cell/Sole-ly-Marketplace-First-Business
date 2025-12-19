@@ -351,20 +351,27 @@ const Orders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-primary text-lg">Awaiting your confirmation</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+            <CardContent className="space-y-4 text-sm">
               {upcomingActions.map((order) => {
                 const isPickup = (order.order_shipping_details as any)?.delivery_type === "pickup";
                 return (
-                  <div key={order.id} className="flex items-center justify-between">
-                    <span>
-                      {isPickup
-                        ? `Order #${order.id.slice(0, 8)} is ready for pickup`
-                        : `Order #${order.id.slice(0, 8)} arrived ${order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}`
-                      }
-                    </span>
-                    <Button size="sm" onClick={() => handleConfirmDelivery(order)}>
-                      {isPickup ? "Confirm Pickup" : "Confirm delivery"}
-                    </Button>
+                  <div key={order.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span>
+                        {isPickup
+                          ? `Order #${order.id.slice(0, 8)} is ready for pickup`
+                          : `Order #${order.id.slice(0, 8)} arrived ${order.shipped_at ? formatDistanceToNow(new Date(order.shipped_at), { addSuffix: true }) : "recently"}`
+                        }
+                      </span>
+                      <Button size="sm" onClick={() => handleConfirmDelivery(order)}>
+                        {isPickup ? "Confirm Pickup" : "Confirm delivery"}
+                      </Button>
+                    </div>
+                    {isPickup && (
+                      <p className="text-xs text-muted-foreground bg-yellow-50 dark:bg-yellow-950/20 p-2 rounded border border-yellow-200 dark:border-yellow-800">
+                        👟 <strong>Important:</strong> Please go to the vendor's shop and collect your shoes first, then click "Confirm Pickup" once you have them in hand.
+                      </p>
+                    )}
                   </div>
                 );
               })}
