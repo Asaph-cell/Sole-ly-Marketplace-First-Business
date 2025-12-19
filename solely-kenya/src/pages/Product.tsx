@@ -103,7 +103,8 @@ const Product = () => {
   }, [user, id]);
 
 
-  const requireSizeSelection = product?.sizes && product.sizes.length > 0 && product.sizes[0] !== "";
+  // Only require size if it's NOT an accessory and sizes exist
+  const requireSizeSelection = product?.category !== 'accessories' && product?.sizes && product.sizes.length > 0 && product.sizes[0] !== "";
 
   const ensureSizeSelected = () => {
     if (requireSizeSelection && !selectedSize) {

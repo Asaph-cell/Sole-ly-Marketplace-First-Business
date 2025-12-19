@@ -223,12 +223,12 @@ const Checkout = () => {
             brand: product.brand,
             images: product.images,
             price_ksh: unitPrice,
-            size: cartItem.size, // Include size in snapshot for reference
+            size: cartItem.size || null, // Allow null size for accessories
           },
           quantity: cartItem.quantity,
           unit_price_ksh: unitPrice,
           line_total_ksh: lineTotal,
-          size: cartItem.size, // Selected shoe size
+          size: cartItem.size || null, // Allow null size for accessories
         };
       });
 
