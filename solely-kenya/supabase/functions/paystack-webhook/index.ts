@@ -75,7 +75,6 @@ serve(async (req: Request) => {
                 .from('payments')
                 .select('*')
                 .eq('order_id', orderId)
-                .eq('gateway', 'paystack')
                 .order('created_at', { ascending: false });
 
             let paymentId;
