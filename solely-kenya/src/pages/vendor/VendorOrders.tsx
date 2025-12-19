@@ -114,30 +114,19 @@ const VendorOrders = () => {
         })
       );
 
-      // IMPORTANT: Filter to only show orders that have been fully paid
-      // Vendors should NOT see orders with failed/pending payments
-      const paidOrders = ordersWithPayments.filter((order) => {
-        const totalPaid = (order.payments || [])
-          .filter((p: any) => p.status === "captured")
-          .reduce((sum: number, p: any) => sum + Number(p.amount_ksh || 0), 0);
-
-        // Order must have at least one captured payment and payment >= total
-        // Also include orders that are waiting for vendor action or already processed
-        const isFullyPaid = totalPaid >= order.total_ksh;
-        const isProcessedOrder = [
-          "pending_vendor_confirmation",  // Waiting for vendor to accept
-          "accepted",                      // Accepted, ready to ship
-          "arrived",                       // Shipped/delivered
-          "delivered",
-          "completed",
-          "disputed",
-          "refunded"
+      // Show ALL orders except cancelled ones - payment status will be shown as badge
+      // This ensures vendors always see orders even if payment webhook was delayed
+      const visibleOrders = ordersWithPayments.filter((order) => {
+        // Hide cancelled orders
+        const isCancelled = [
+          "cancelled_by_vendor",
+          "cancelled_by_customer"
         ].includes(order.status);
 
-        return isFullyPaid || isProcessedOrder;
+        return !isCancelled;
       });
 
-      setOrders(paidOrders as unknown as OrderRecord[]);
+      setOrders(visibleOrders as unknown as OrderRecord[]);
     } catch (error) {
       console.error("Error loading orders:", error);
       toast.error("Failed to load orders");
@@ -183,6 +172,18 @@ const VendorOrders = () => {
             schema: 'public',
             table: 'orders',
             filter: `vendor_id=eq.${user.id}`,
+          },
+          () => {
+            loadOrders();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'payments',
+            // Listen to all payment changes - loadOrders will filter to this vendor's orders
           },
           () => {
             loadOrders();
