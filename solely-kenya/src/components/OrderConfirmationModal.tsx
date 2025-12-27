@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,13 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Star, CheckCircle, AlertTriangle, Upload } from "lucide-react";
+
+interface OrderItem {
+    id: string;
+    product_id: string;
+    product_name: string;
+    quantity: number;
+}
 
 interface OrderConfirmationModalProps {
     open: boolean;
@@ -57,6 +64,36 @@ export const OrderConfirmationModal = ({
 
     const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
 
+    // Product ratings state
+    const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+    const [productRatings, setProductRatings] = useState<Record<string, number>>({});
+    const [productHoverRatings, setProductHoverRatings] = useState<Record<string, number>>({});
+    const [loadingItems, setLoadingItems] = useState(false);
+
+    // Fetch order items when modal opens
+    useEffect(() => {
+        if (open && orderId) {
+            fetchOrderItems();
+        }
+    }, [open, orderId]);
+
+    const fetchOrderItems = async () => {
+        setLoadingItems(true);
+        try {
+            const { data, error } = await supabase
+                .from("order_items")
+                .select("id, product_id, product_name, quantity")
+                .eq("order_id", orderId);
+
+            if (error) throw error;
+            setOrderItems(data || []);
+        } catch (error) {
+            console.error("Failed to fetch order items:", error);
+        } finally {
+            setLoadingItems(false);
+        }
+    };
+
     const resetForm = () => {
         setStep("choice");
         setRating(0);
@@ -65,6 +102,8 @@ export const OrderConfirmationModal = ({
         setIssueReason("");
         setIssueDescription("");
         setEvidenceFiles([]);
+        setProductRatings({});
+        setProductHoverRatings({});
     };
 
     const handleClose = () => {
@@ -79,14 +118,38 @@ export const OrderConfirmationModal = ({
             return;
         }
 
+        // Check if at least one product is rated
+        const hasProductRating = orderItems.some(item => productRatings[item.product_id] > 0);
+        if (orderItems.length > 0 && !hasProductRating) {
+            toast.error("Please rate at least one product");
+            return;
+        }
+
         setSubmitting(true);
         try {
-            // Updated to use secure Edge Function which handles:
-            // 1. Order status -> completed
-            // 2. Escrow -> released
-            // 3. Payout -> Created (CRITICAL)
-            // 4. Vendor Rating -> Inserted
+            // 1. Submit product reviews first
+            const productReviewPromises = orderItems
+                .filter(item => productRatings[item.product_id] > 0)
+                .map(item =>
+                    supabase.from("reviews").insert({
+                        product_id: item.product_id,
+                        user_id: customerId,
+                        order_id: orderId,
+                        rating: productRatings[item.product_id],
+                        comment: null,
+                        reviewer_name: "Verified Buyer",
+                    })
+                );
 
+            if (productReviewPromises.length > 0) {
+                const reviewResults = await Promise.all(productReviewPromises);
+                const reviewErrors = reviewResults.filter(r => r.error);
+                if (reviewErrors.length > 0) {
+                    console.warn("Some product reviews failed:", reviewErrors);
+                }
+            }
+
+            // 2. Confirm order via Edge Function (handles vendor rating, escrow, payout)
             const { data, error } = await supabase.functions.invoke('confirm-order', {
                 body: {
                     orderId,
@@ -98,7 +161,7 @@ export const OrderConfirmationModal = ({
             if (error) throw new Error(error.message || "Failed to confirm order");
             if (!data?.success) throw new Error(data?.error || "Failed to process confirmation");
 
-            toast.success("Order confirmed! Payment released to vendor payment account. Thank you!");
+            toast.success("Order confirmed! Payment released to vendor. Thank you for your reviews!");
             onSuccess();
             handleClose();
         } catch (error: any) {
@@ -234,7 +297,7 @@ export const OrderConfirmationModal = ({
 
     return (
         <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle>
                         {step === "choice" && "Confirm Your Order"}
@@ -285,8 +348,55 @@ export const OrderConfirmationModal = ({
 
                 {/* Step 2a: Satisfied */}
                 {step === "satisfied" && (
-                    <div className="space-y-6 py-4">
-                        <div>
+                    <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto">
+                        {/* Product Ratings Section */}
+                        {orderItems.length > 0 && (
+                            <div>
+                                <Label className="text-base font-medium">Rate the Products *</Label>
+                                <p className="text-sm text-muted-foreground mb-3">
+                                    Rate at least one product
+                                </p>
+                                <div className="space-y-3">
+                                    {loadingItems ? (
+                                        <p className="text-sm text-muted-foreground">Loading products...</p>
+                                    ) : (
+                                        orderItems.map((item) => (
+                                            <div key={item.id} className="border rounded-lg p-3 bg-muted/30">
+                                                <p className="font-medium text-sm mb-2">
+                                                    {item.product_name}
+                                                    {item.quantity > 1 && <span className="text-muted-foreground ml-1">(x{item.quantity})</span>}
+                                                </p>
+                                                <div className="flex items-center gap-1">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <button
+                                                            key={star}
+                                                            type="button"
+                                                            className="p-0.5 transition-transform hover:scale-110"
+                                                            onMouseEnter={() => setProductHoverRatings(prev => ({ ...prev, [item.product_id]: star }))}
+                                                            onMouseLeave={() => setProductHoverRatings(prev => ({ ...prev, [item.product_id]: 0 }))}
+                                                            onClick={() => setProductRatings(prev => ({ ...prev, [item.product_id]: star }))}
+                                                        >
+                                                            <Star
+                                                                className={`h-5 w-5 ${star <= (productHoverRatings[item.product_id] || productRatings[item.product_id] || 0)
+                                                                    ? "fill-yellow-400 text-yellow-400"
+                                                                    : "text-gray-300"
+                                                                    }`}
+                                                            />
+                                                        </button>
+                                                    ))}
+                                                    <span className="ml-2 text-xs text-muted-foreground">
+                                                        {productRatings[item.product_id] > 0 ? `${productRatings[item.product_id]}/5` : "Rate"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Vendor Rating Section */}
+                        <div className="border-t pt-4">
                             <Label className="text-base font-medium">Rate the Vendor *</Label>
                             <p className="text-sm text-muted-foreground mb-3">
                                 Your rating helps other buyers make informed decisions
@@ -295,13 +405,13 @@ export const OrderConfirmationModal = ({
                         </div>
 
                         <div>
-                            <Label htmlFor="feedback">Feedback (Optional)</Label>
+                            <Label htmlFor="feedback">Vendor Feedback (Optional)</Label>
                             <Textarea
                                 id="feedback"
                                 placeholder="Share your experience with this vendor..."
                                 value={feedback}
                                 onChange={(e) => setFeedback(e.target.value)}
-                                rows={3}
+                                rows={2}
                             />
                         </div>
 
@@ -316,7 +426,7 @@ export const OrderConfirmationModal = ({
                             <Button
                                 className="flex-1 bg-green-600 hover:bg-green-700"
                                 onClick={handleConfirmSatisfied}
-                                disabled={submitting || rating === 0}
+                                disabled={submitting || rating === 0 || (orderItems.length > 0 && !orderItems.some(item => productRatings[item.product_id] > 0))}
                             >
                                 {submitting ? "Processing..." : "Confirm & Release Payment"}
                             </Button>
