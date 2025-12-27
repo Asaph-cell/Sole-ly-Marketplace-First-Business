@@ -133,8 +133,8 @@ export const emailTemplates = {
           </div>
         </div>
         <div class="footer">
-          <p>This email was sent by Solely Kenya</p>
-          <p>If you have questions, reply to this email or contact support.</p>
+          <p>This is an automated message from Solely Kenya</p>
+          <p style="font-size: 11px; color: #9ca3af;">This email cannot be replied to. For support, visit <a href="https://solelyshoes.co.ke/contact" style="color: #6b7280;">solelyshoes.co.ke/contact</a></p>
         </div>
       </div>
     </body>
@@ -645,8 +645,62 @@ export const emailTemplates = {
           <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Our support team aims to resolve disputes within 3-5 business days.</p>
         </div>
         <div class="footer">
-          <p>This email was sent by Solely Kenya</p>
-          <p>If you have additional information, please reply to this email.</p>
+          <p>This is an automated message from Solely Kenya</p>
+          <p style="font-size: 11px; color: #9ca3af;">This email cannot be replied to. For support, visit <a href="https://solelyshoes.co.ke/contact" style="color: #6b7280;">solelyshoes.co.ke/contact</a></p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
+  // NEW: Dispute Status Update
+  disputeStatusUpdate: (data: {
+    userName: string;
+    orderId: string;
+    newStatus: string;
+    resolution: string;
+    adminNotes?: string;
+    isRefund: boolean;
+    refundAmount?: number;
+  }) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: ${data.isRefund ? '#10b981' : '#3b82f6'}; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .status-box { background: ${data.isRefund ? '#d1fae5' : '#dbeafe'}; border: 2px solid ${data.isRefund ? '#10b981' : '#3b82f6'}; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">${data.isRefund ? '💰 Dispute Resolved - Refund Issued' : '📋 Dispute Update'}</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${data.userName},</p>
+          <p>There's an update on your dispute for order #${data.orderId}.</p>
+          
+          <div class="status-box">
+            <p><strong>Status:</strong> ${data.newStatus}</p>
+            <p><strong>Resolution:</strong> ${data.resolution}</p>
+            ${data.isRefund && data.refundAmount ? `<p><strong>Refund Amount:</strong> KES ${data.refundAmount.toLocaleString()}</p>` : ''}
+            ${data.adminNotes ? `<p><strong>Admin Notes:</strong> ${data.adminNotes}</p>` : ''}
+          </div>
+          
+          ${data.isRefund ? `
+          <p style="margin-top: 15px;"><strong>Refund Information:</strong></p>
+          <p style="font-size: 14px; color: #6b7280;">Your refund will be processed within 3-5 business days and credited to your original payment method.</p>
+          ` : ''}
+          
+          <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Thank you for your patience while we resolved this matter.</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated message from Solely Kenya</p>
+          <p style="font-size: 11px; color: #9ca3af;">This email cannot be replied to. For support, visit <a href="https://solelyshoes.co.ke/contact" style="color: #6b7280;">solelyshoes.co.ke/contact</a></p>
         </div>
       </div>
     </body>
