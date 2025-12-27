@@ -25,7 +25,8 @@ const Home = () => {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch products
+      const { data: productsData, error } = await supabase
         .from("products")
         .select("*")
         .eq("status", "active")
@@ -33,7 +34,39 @@ const Home = () => {
         .limit(4);
 
       if (error) throw error;
-      setFeaturedProducts(data || []);
+
+      // Fetch reviews for these products
+      if (productsData && productsData.length > 0) {
+        const productIds = productsData.map(p => p.id);
+        const { data: reviewsData } = await supabase
+          .from("reviews")
+          .select("product_id, rating")
+          .in("product_id", productIds);
+
+        // Group reviews by product_id and calculate stats
+        const reviewStats: Record<string, { sum: number; count: number }> = {};
+        (reviewsData || []).forEach(review => {
+          if (!reviewStats[review.product_id]) {
+            reviewStats[review.product_id] = { sum: 0, count: 0 };
+          }
+          reviewStats[review.product_id].sum += review.rating;
+          reviewStats[review.product_id].count += 1;
+        });
+
+        // Map products with their review stats
+        const productsWithStats = productsData.map(product => {
+          const stats = reviewStats[product.id];
+          return {
+            ...product,
+            averageRating: stats ? stats.sum / stats.count : null,
+            reviewCount: stats ? stats.count : 0,
+          };
+        });
+
+        setFeaturedProducts(productsWithStats);
+      } else {
+        setFeaturedProducts([]);
+      }
     } catch (error) {
       console.error("Error fetching featured products:", error);
     } finally {
@@ -242,7 +275,10 @@ const Home = () => {
                   price={product.price_ksh}
                   image={product.images?.[0] || "/placeholder.svg"}
                   brand={product.brand}
-                  isNew={true}
+                  averageRating={product.averageRating}
+                  reviewCount={product.reviewCount}
+                  createdAt={product.created_at}
+                  condition={product.condition}
                 />
               ))
             )}
