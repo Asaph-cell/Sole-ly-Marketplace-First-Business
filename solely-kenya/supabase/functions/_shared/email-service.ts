@@ -445,21 +445,22 @@ export const emailTemplates = {
         .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
         .order-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
         .location-box { background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .contact-buttons { display: block; margin-top: 15px; }
+        .contact-buttons { display: block; margin-top: 15px; text-align: center; }
         .contact-button { 
           display: inline-block; 
-          color: white; 
+          color: #ffffff !important; 
           padding: 14px 28px; 
           text-decoration: none; 
           border-radius: 8px; 
           text-align: center; 
           font-weight: bold; 
           font-size: 16px;
-          margin: 5px 10px 5px 0;
+          margin: 5px;
           min-width: 140px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .whatsapp-btn { background: #25D366; }
-        .phone-btn { background: #2563eb; }
+        .whatsapp-btn { background-color: #25D366; border: 1px solid #20bd5a; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .phone-btn { background-color: #2563eb; border: 1px solid #1d4ed8; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
         .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
       </style>
     </head>
@@ -478,20 +479,21 @@ export const emailTemplates = {
           </div>
           
           <div class="location-box">
-            <p style="margin: 0 0 10px 0; font-weight: bold;">📍 Pickup Location:</p>
-            <p style="margin: 0;">${data.vendorAddress}</p>
+            <p><strong>📍 Pickup Location:</strong></p>
+            <p style="font-size: 16px; margin: 10px 0;">${data.vendorAddress}</p>
           </div>
           
-          <p><strong>Contact the seller to arrange pickup time:</strong></p>
+          <p>Please contact the seller to arrange the exact pickup time:</p>
+          
           <div class="contact-buttons">
-            <a href="https://wa.me/${normalizeKenyanPhone(data.vendorWhatsApp)}" class="contact-button whatsapp-btn">
+            <a href="https://wa.me/${normalizeKenyanPhone(data.vendorWhatsApp)}" class="contact-button whatsapp-btn" style="color: #ffffff !important; text-decoration: none;">
               💬 WhatsApp
             </a>
-            <a href="tel:+${normalizeKenyanPhone(data.vendorPhone)}" class="contact-button phone-btn">
+            <a href="tel:+${normalizeKenyanPhone(data.vendorPhone)}" class="contact-button phone-btn" style="color: #ffffff !important; text-decoration: none;">
               📞 Call Seller
             </a>
           </div>
-          
+        </div>  
           <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Remember to confirm delivery on Solely after you collect your order to release payment to the vendor.</p>
         </div>
         <div class="footer">
