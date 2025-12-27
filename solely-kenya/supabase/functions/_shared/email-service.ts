@@ -24,6 +24,27 @@ interface EmailResult {
   error?: string;
 }
 
+/**
+ * Normalize Kenyan phone number to international format (254...)
+ * Handles: 07xxx → 2547xxx, +254xxx → 254xxx, 254xxx → 254xxx
+ */
+function normalizeKenyanPhone(phone: string): string {
+  if (!phone) return '';
+  // Remove all non-digit characters
+  let digits = phone.replace(/[^0-9]/g, '');
+
+  // If starts with 0, replace with 254 (e.g., 0722123456 → 254722123456)
+  if (digits.startsWith('0')) {
+    digits = '254' + digits.slice(1);
+  }
+  // If doesn't start with 254, assume it needs it
+  else if (!digits.startsWith('254') && digits.length >= 9) {
+    digits = '254' + digits;
+  }
+
+  return digits;
+}
+
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -421,11 +442,24 @@ export const emailTemplates = {
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-        .content { background: #f9faf";
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
         .order-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
         .location-box { background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .contact-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .contact-button { display: inline-block; background: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; flex: 1; text-align: center; }
+        .contact-buttons { display: block; margin-top: 15px; }
+        .contact-button { 
+          display: inline-block; 
+          color: white; 
+          padding: 14px 28px; 
+          text-decoration: none; 
+          border-radius: 8px; 
+          text-align: center; 
+          font-weight: bold; 
+          font-size: 16px;
+          margin: 5px 10px 5px 0;
+          min-width: 140px;
+        }
+        .whatsapp-btn { background: #25D366; }
+        .phone-btn { background: #2563eb; }
         .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
       </style>
     </head>
@@ -450,11 +484,11 @@ export const emailTemplates = {
           
           <p><strong>Contact the seller to arrange pickup time:</strong></p>
           <div class="contact-buttons">
-            <a href="https://wa.me/${data.vendorWhatsApp.replace(/[^0-9]/g, '')}" class="contact-button" style="background: #25D366;">
-              WhatsApp
+            <a href="https://wa.me/${normalizeKenyanPhone(data.vendorWhatsApp)}" class="contact-button whatsapp-btn">
+              💬 WhatsApp
             </a>
-            <a href="tel:${data.vendorPhone}" class="contact-button" style="background: #3b82f6;">
-              Call
+            <a href="tel:+${normalizeKenyanPhone(data.vendorPhone)}" class="contact-button phone-btn">
+              📞 Call Seller
             </a>
           </div>
           
