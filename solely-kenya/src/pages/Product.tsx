@@ -216,7 +216,7 @@ const Product = () => {
               {selectedImage === -1 && product.video_url ? (
                 <video
                   src={product.video_url}
-                  className="w-full h-full object-contain bg-black"
+                  className="w-full h-full object-cover"
                   muted
                   loop
                   playsInline
