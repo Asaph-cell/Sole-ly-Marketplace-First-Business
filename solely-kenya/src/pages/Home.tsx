@@ -12,6 +12,7 @@ import ParallaxHero from "@/components/ParallaxHero";
 import { CATEGORIES, MAIN_CATEGORIES, OTHER_CATEGORIES } from "@/lib/categories";
 import { MoreHorizontal } from "lucide-react";
 import { PendingOrdersBanner } from "@/components/vendor/PendingOrdersBanner";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 
 
 const Home = () => {
@@ -260,8 +261,8 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {loading ? (
-              <div className="col-span-full text-center py-8 text-muted-foreground">
-                Loading products...
+              <div className="col-span-full">
+                <SneakerLoader message="Loading new arrivals..." size="sm" fullScreen={false} />
               </div>
             ) : featuredProducts.length === 0 ? (
               <div className="col-span-full text-center py-8 text-muted-foreground">

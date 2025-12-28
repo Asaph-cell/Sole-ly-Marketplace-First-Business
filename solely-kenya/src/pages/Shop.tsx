@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Filter, X } from "lucide-react";
 import { CATEGORIES, getCategoryName } from "@/lib/categories";
 import { ACCESSORY_TYPES, getAccessoryTypeName } from "@/lib/accessoryTypes";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -168,11 +169,7 @@ const Shop = () => {
 
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading products...</p>
-      </div>
-    );
+    return <SneakerLoader message="Loading products..." />;
   }
 
   return (

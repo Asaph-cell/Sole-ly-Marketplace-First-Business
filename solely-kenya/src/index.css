@@ -263,6 +263,16 @@ All colors MUST be HSL.
   .tap-active {
     @apply active:scale-95 transition-transform;
   }
+
+  /* Hide scrollbar for horizontal carousels */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Prevent horizontal scroll on all pages */

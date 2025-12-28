@@ -10,6 +10,7 @@ import { VendorRating } from "@/components/VendorRating";
 import { ProductReviews } from "@/components/ProductReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 import { SEO } from "@/components/SEO";
 import { ShoeSizeChart } from "@/components/ShoeSizeChart";
 
@@ -176,11 +177,7 @@ const Product = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading product...</p>
-      </div>
-    );
+    return <SneakerLoader message="Finding your perfect pair..." />;
   }
 
   if (!product) {
@@ -204,9 +201,9 @@ const Product = () => {
         />
       )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <div className="mb-6 sm:mb-8">
-          <Link to="/shop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+        {/* Minimalist Header/Breadcrumb */}
+        <div className="mb-4 sm:mb-6">
+          <Link to="/shop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-sm">
             <ArrowLeft className="h-4 w-4" />
             Back to Shop
           </Link>
@@ -214,11 +211,11 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            {/* Mobile Gallery - Same structure as desktop */}
+            {/* Mobile Gallery - Card-based design with horizontal carousel */}
             <div className="md:hidden">
-              {/* Main Image */}
+              {/* Main Image Card */}
               <div
-                className="aspect-square overflow-hidden rounded-xl border-2 border-border bg-muted relative cursor-pointer"
+                className="aspect-square overflow-hidden rounded-4xl shadow-sm bg-muted relative cursor-pointer"
                 onClick={() => {
                   setLightboxIndex(selectedImage === -1 ? 0 : selectedImage);
                   setLightboxOpen(true);
@@ -243,25 +240,27 @@ const Product = () => {
                 )}
               </div>
 
-              {/* Thumbnails Grid - 4 columns like desktop */}
-              <div className="grid grid-cols-4 gap-2 mt-3">
+              {/* Horizontal Thumbnail Carousel */}
+              <div className="flex justify-center overflow-x-auto gap-3 mt-4 pb-2 scrollbar-hide snap-x snap-mandatory">
                 {/* Video thumbnail */}
                 {product.video_url && (
                   <button
                     onClick={() => setSelectedImage(-1)}
-                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all relative ${selectedImage === -1 ? "border-primary" : "border-border"
+                    className={`aspect-square w-20 shrink-0 overflow-hidden rounded-2xl shadow-sm transition-all snap-start ${selectedImage === -1 ? "ring-2 ring-primary ring-offset-2" : ""
                       }`}
                   >
-                    <img
-                      src={product.images?.[0] || "/placeholder.svg"}
-                      alt="Video preview"
-                      className="w-full h-full object-cover opacity-80"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                      <div className="bg-purple-500 rounded-full p-1">
-                        <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+                    <div className="relative w-full h-full">
+                      <img
+                        src={product.images?.[0] || "/placeholder.svg"}
+                        alt="Video preview"
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="bg-purple-500 rounded-full p-1">
+                          <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -271,7 +270,7 @@ const Product = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary" : "border-border"
+                    className={`aspect-square w-20 shrink-0 overflow-hidden rounded-2xl shadow-sm transition-all snap-start ${selectedImage === index ? "ring-2 ring-primary ring-offset-2" : ""
                       }`}
                   >
                     <img
@@ -547,13 +546,13 @@ const Product = () => {
         <VendorRating vendorId={product.vendor_id} productId={product.id} />
       </div>
 
-      {/* Sticky Mobile CTA Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-4 z-40 safe-bottom">
+      {/* Floating Mobile Action Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm rounded-t-3xl shadow-card p-4 z-40 safe-bottom">
         <div className="flex gap-3">
           <Button
             size="lg"
             variant="outline"
-            className="flex-1 min-h-[48px] tap-active"
+            className="flex-1 min-h-[48px] tap-active rounded-2xl"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
           >
@@ -561,7 +560,7 @@ const Product = () => {
           </Button>
           <Button
             size="lg"
-            className="flex-[1.5] min-h-[48px] tap-active"
+            className="flex-[1.5] min-h-[48px] tap-active rounded-2xl"
             onClick={handleBuyNow}
             disabled={product.stock === 0}
           >

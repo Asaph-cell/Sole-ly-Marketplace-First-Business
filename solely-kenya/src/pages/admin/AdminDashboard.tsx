@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 
 const AdminDashboard = () => {
   const { user, loading } = useAuth();
@@ -263,7 +264,7 @@ const AdminDashboard = () => {
   };
 
   if (loading || !isAdmin) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <SneakerLoader message="Loading admin dashboard..." />;
   }
 
   const maxRevenue = Math.max(...dailyRevenue.map(d => d.revenue), 1);
@@ -279,12 +280,7 @@ const AdminDashboard = () => {
         </div>
 
         {loadingData ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading dashboard data...</p>
-            </div>
-          </div>
+          <SneakerLoader message="Loading dashboard data..." fullScreen={false} />
         ) : (
           <>
             {/* Key Metrics Row 1 */}

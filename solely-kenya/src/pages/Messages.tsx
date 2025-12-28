@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { ConversationList } from "@/components/messaging/ConversationList";
 import { MessageThread } from "@/components/messaging/MessageThread";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 
 const Messages = () => {
   const { user, loading } = useAuth();
@@ -17,7 +18,7 @@ const Messages = () => {
   }, [user, loading, navigate]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <SneakerLoader message="Loading messages..." />;
   }
 
   return (

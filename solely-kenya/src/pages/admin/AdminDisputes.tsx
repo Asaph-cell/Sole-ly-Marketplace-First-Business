@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle, Mail, CheckCircle, XCircle, Eye, RefreshCw } from "lucide-react";
+import { SneakerLoader } from "@/components/ui/SneakerLoader";
 
 interface Dispute {
     id: string;
@@ -220,7 +221,7 @@ const AdminDisputes = () => {
     });
 
     if (loading || !isAdmin) {
-        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+        return <SneakerLoader message="Loading disputes..." />;
     }
 
     return (
@@ -294,7 +295,7 @@ const AdminDisputes = () => {
                         <Card>
                             <CardContent className="pt-6">
                                 {loadingData ? (
-                                    <div className="text-center py-8">Loading disputes...</div>
+                                    <SneakerLoader message="Loading disputes..." size="sm" fullScreen={false} />
                                 ) : filteredDisputes.length === 0 ? (
                                     <div className="text-center py-8 text-muted-foreground">
                                         No {activeTab} disputes
