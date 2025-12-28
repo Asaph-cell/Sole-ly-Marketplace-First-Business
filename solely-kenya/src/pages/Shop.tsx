@@ -518,6 +518,7 @@ const Shop = () => {
                     reviewCount={product.reviewCount}
                     createdAt={product.created_at}
                     condition={product.condition || "new"}
+                    videoUrl={product.video_url}
                   />
                 ))}
               </div>

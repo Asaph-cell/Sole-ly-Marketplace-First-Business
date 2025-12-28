@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { ShoeSizeChart } from "@/components/ShoeSizeChart";
+import { VideoUploader } from "@/components/VideoUploader";
 import { AlertTriangle } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -38,6 +39,7 @@ const VendorEditProduct = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -77,6 +79,7 @@ const VendorEditProduct = () => {
           condition_notes: data.condition_notes || "",
         });
         setExistingImages(data.images || []);
+        setVideoUrl(data.video_url || null);
       }
     } catch (error: any) {
       toast.error("Failed to load product");
@@ -168,6 +171,7 @@ const VendorEditProduct = () => {
           key_features: keyFeaturesArray,
           sizes: sizesArray,
           images: allImages,
+          video_url: videoUrl,
           condition: formData.condition,
           condition_notes: formData.condition_notes || null,
         })
@@ -424,6 +428,15 @@ const VendorEditProduct = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Video Upload */}
+                {user && (
+                  <VideoUploader
+                    vendorId={user.id}
+                    videoUrl={videoUrl}
+                    onVideoChange={setVideoUrl}
+                  />
+                )}
 
                 <div className="flex gap-4">
                   <Button

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { ShoeSizeChart } from "@/components/ShoeSizeChart";
+import { VideoUploader } from "@/components/VideoUploader";
 import { AlertTriangle } from "lucide-react";
 import { CATEGORIES, getCategoryName } from "@/lib/categories";
 
@@ -35,6 +36,7 @@ const VendorAddProduct = () => {
   });
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -119,6 +121,7 @@ const VendorAddProduct = () => {
         status: "active",
         sizes: sizesArray,
         images: imageUrls,
+        video_url: videoUrl,
         condition: formData.condition,
         condition_notes: formData.condition_notes || null,
       });
@@ -346,6 +349,15 @@ const VendorAddProduct = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Video Upload */}
+                {user && (
+                  <VideoUploader
+                    vendorId={user.id}
+                    videoUrl={videoUrl}
+                    onVideoChange={setVideoUrl}
+                  />
+                )}
 
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                   <p className="text-sm text-green-800">

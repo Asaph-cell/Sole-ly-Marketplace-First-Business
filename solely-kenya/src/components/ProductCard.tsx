@@ -1,8 +1,9 @@
 
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Star } from "lucide-react";
+import { Star, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProductCardProps {
@@ -15,6 +16,7 @@ interface ProductCardProps {
   reviewCount?: number;
   createdAt: string;
   condition?: "new" | "like_new" | "good" | "fair";
+  videoUrl?: string | null;
 }
 
 const conditionLabels: Record<string, { label: string; color: string }> = {
@@ -33,9 +35,52 @@ const ProductCard = ({
   averageRating,
   reviewCount = 0,
   createdAt,
-  condition = "new"
+  condition = "new",
+  videoUrl
 }: ProductCardProps) => {
   const conditionInfo = conditionLabels[condition] || conditionLabels.new;
+  const [isHovering, setIsHovering] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Handle hover for desktop
+  useEffect(() => {
+    if (!isMobile && videoRef.current && videoUrl) {
+      if (isHovering) {
+        videoRef.current.play().catch(() => { });
+      } else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [isHovering, isMobile, videoUrl]);
+
+  // Handle tap for mobile
+  const handleMobileTap = (e: React.MouseEvent) => {
+    if (isMobile && videoUrl) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (videoRef.current) {
+        if (isPlaying) {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        } else {
+          videoRef.current.play().catch(() => { });
+          setIsPlaying(true);
+        }
+      }
+    }
+  };
 
   // Calculate if product is new (within last 30 days)
   const isNew = (Date.now() - new Date(createdAt).getTime()) < 30 * 24 * 60 * 60 * 1000;
@@ -44,18 +89,49 @@ const ProductCard = ({
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ type: "spring", stiffness: 300 }}
+      onMouseEnter={() => !isMobile && setIsHovering(true)}
+      onMouseLeave={() => !isMobile && setIsHovering(false)}
     >
       <Link to={`/product/${id}`} className="group">
         <Card className="h-full overflow-hidden border-2 hover:shadow-hover transition-shadow duration-300 bg-card flex flex-col">
           <CardContent className="p-0 relative">
-            <div className="aspect-square overflow-hidden bg-white">
+            <div
+              className="aspect-square overflow-hidden bg-white relative"
+              onClick={handleMobileTap}
+            >
+              {/* Image (always visible as base layer) */}
               <img
                 src={image}
                 alt={name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className={`w-full h-full object-cover transition-opacity duration-300 ${(isHovering || isPlaying) && videoUrl ? "opacity-0" : "opacity-100"
+                  }`}
                 loading="lazy"
               />
+
+              {/* Video (lazy loaded, shown on hover/tap) */}
+              {videoUrl && (
+                <video
+                  ref={videoRef}
+                  src={videoUrl}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovering || isPlaying ? "opacity-100" : "opacity-0"
+                    }`}
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                />
+              )}
+
+              {/* Play button overlay for mobile */}
+              {videoUrl && isMobile && !isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="bg-black/50 rounded-full p-3">
+                    <Play className="h-6 w-6 text-white fill-white" />
+                  </div>
+                </div>
+              )}
             </div>
+
             {/* Condition Badge - Top Left */}
             <Badge
               variant="secondary"
@@ -64,9 +140,18 @@ const ProductCard = ({
               <span className={`w-2 h-2 rounded-full ${conditionInfo.color}`}></span>
               {conditionInfo.label}
             </Badge>
-            {isNew && (
-              <Badge className="absolute top-3 right-3 bg-accent text-accent-foreground">New Arrival</Badge>
-            )}
+
+            {/* Video Badge - Top Right area */}
+            <div className="absolute top-3 right-3 flex flex-col gap-1">
+              {isNew && (
+                <Badge className="bg-accent text-accent-foreground">New Arrival</Badge>
+              )}
+              {videoUrl && (
+                <Badge variant="secondary" className="bg-purple-500 text-white">
+                  📹 Video
+                </Badge>
+              )}
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col items-start gap-2 p-4 flex-grow">
             <span className="text-xs text-muted-foreground uppercase tracking-wide min-h-[1.5em] block">

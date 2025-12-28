@@ -211,33 +211,70 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            <div className="aspect-square overflow-hidden rounded-xl border-2 border-border bg-muted">
-              <img
-                src={product.images?.[selectedImage] || "/placeholder.svg"}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                fetchPriority="high"
-              />
+            <div className="aspect-square overflow-hidden rounded-xl border-2 border-border bg-muted relative">
+              {/* Show video if selected (index -1) and video exists */}
+              {selectedImage === -1 && product.video_url ? (
+                <video
+                  src={product.video_url}
+                  className="w-full h-full object-contain bg-black"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  controls={false}
+                />
+              ) : (
+                <img
+                  src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  fetchPriority="high"
+                />
+              )}
             </div>
-            {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
-                {product.images.map((image: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
-                      }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`Product view ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Thumbnails including video */}
+            <div className="grid grid-cols-5 gap-2">
+              {/* Video thumbnail */}
+              {product.video_url && (
+                <button
+                  onClick={() => setSelectedImage(-1)}
+                  className={`aspect-square overflow-hidden rounded-lg border-2 transition-all relative ${selectedImage === -1 ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
+                    }`}
+                >
+                  {/* Use first image as video preview */}
+                  <img
+                    src={product.images?.[0] || "/placeholder.svg"}
+                    alt="Video preview"
+                    className="w-full h-full object-cover opacity-80"
+                    loading="lazy"
+                  />
+                  {/* Play icon overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div className="bg-purple-500 rounded-full p-1.5">
+                      <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+              )}
+              {/* Image thumbnails */}
+              {product.images?.map((image: string, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
+                    }`}
+                >
+                  <img
+                    src={image}
+                    alt={`Product view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-6">

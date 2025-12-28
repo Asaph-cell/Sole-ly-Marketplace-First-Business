@@ -279,6 +279,7 @@ const Home = () => {
                   reviewCount={product.reviewCount}
                   createdAt={product.created_at}
                   condition={product.condition}
+                  videoUrl={product.video_url}
                 />
               ))
             )}
