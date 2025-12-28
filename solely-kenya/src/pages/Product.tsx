@@ -214,93 +214,95 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            {/* Mobile: Main image + arrow navigation + all thumbnails */}
-            <div className="md:hidden">
-              {/* Main display area with arrows */}
-              <div className="relative">
-                <div
-                  className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted relative cursor-pointer"
-                  onClick={() => {
-                    setLightboxIndex(selectedImage === -1 ? 0 : selectedImage);
-                    setLightboxOpen(true);
-                  }}
-                >
-                  {selectedImage === -1 && product.video_url ? (
-                    <video
-                      src={product.video_url}
-                      className="w-full h-full object-cover"
-                      muted
-                      loop
-                      playsInline
-                      autoPlay
-                      controls={false}
-                    />
-                  ) : (
-                    <img
-                      src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                    Tap to zoom
-                  </div>
-                </div>
-
-                {/* Navigation arrows */}
-                {((product.video_url ? 1 : 0) + (product.images?.length || 0)) > 1 && (
-                  <>
-                    <button
-                      onClick={() => {
-                        const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
-                        const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
-                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : totalItems - 1;
-
-                        if (product.video_url && prevIndex === 0) {
-                          setSelectedImage(-1);
-                        } else {
-                          setSelectedImage(prevIndex - (product.video_url ? 1 : 0));
-                        }
-                      }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg"
-                    >
-                      <ChevronLeft className="h-6 w-6 text-gray-800" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
-                        const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
-                        const nextIndex = (currentIndex + 1) % totalItems;
-
-                        if (product.video_url && nextIndex === 0) {
-                          setSelectedImage(-1);
-                        } else {
-                          setSelectedImage(nextIndex - (product.video_url ? 1 : 0));
-                        }
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg"
-                    >
-                      <ChevronRight className="h-6 w-6 text-gray-800" />
-                    </button>
-                  </>
+            {/* Mobile Gallery */}
+            <div className="md:hidden space-y-3">
+              {/* Main Image Container */}
+              <div
+                className="relative aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted"
+                onClick={() => {
+                  setLightboxIndex(selectedImage === -1 ? 0 : selectedImage);
+                  setLightboxOpen(true);
+                }}
+              >
+                {selectedImage === -1 && product.video_url ? (
+                  <video
+                    src={product.video_url}
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    controls={false}
+                  />
+                ) : (
+                  <img
+                    src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 )}
+
+                {/* Left Arrow */}
+                {((product.video_url ? 1 : 0) + (product.images?.length || 0)) > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
+                      const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
+                      const prevIndex = currentIndex > 0 ? currentIndex - 1 : totalItems - 1;
+                      if (product.video_url && prevIndex === 0) {
+                        setSelectedImage(-1);
+                      } else {
+                        setSelectedImage(prevIndex - (product.video_url ? 1 : 0));
+                      }
+                    }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md"
+                  >
+                    <ChevronLeft className="h-5 w-5 text-gray-800" />
+                  </button>
+                )}
+
+                {/* Right Arrow */}
+                {((product.video_url ? 1 : 0) + (product.images?.length || 0)) > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
+                      const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
+                      const nextIndex = (currentIndex + 1) % totalItems;
+                      if (product.video_url && nextIndex === 0) {
+                        setSelectedImage(-1);
+                      } else {
+                        setSelectedImage(nextIndex - (product.video_url ? 1 : 0));
+                      }
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md"
+                  >
+                    <ChevronRight className="h-5 w-5 text-gray-800" />
+                  </button>
+                )}
+
+                {/* Tap to zoom hint */}
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                  Tap to zoom
+                </div>
               </div>
 
-              {/* All thumbnails - scrollable */}
-              <div className="flex gap-2 mt-3 overflow-x-auto pb-2 scrollbar-hide">
-                {/* Video thumbnail */}
+              {/* Thumbnails Row */}
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+                {/* Video Thumbnail */}
                 {product.video_url && (
                   <button
                     onClick={() => setSelectedImage(-1)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 relative ${selectedImage === -1 ? "border-primary" : "border-border"
+                    className={`flex-none w-16 h-16 rounded-lg overflow-hidden border-2 relative ${selectedImage === -1 ? "border-primary ring-2 ring-primary/30" : "border-gray-200"
                       }`}
                   >
                     <img
                       src={product.images?.[0] || "/placeholder.svg"}
                       alt="Video"
-                      className="w-full h-full object-cover opacity-70"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                       <div className="bg-purple-500 rounded-full p-1">
                         <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />
@@ -309,12 +311,12 @@ const Product = () => {
                     </div>
                   </button>
                 )}
-                {/* All image thumbnails */}
+                {/* Image Thumbnails */}
                 {product.images?.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImage === index ? "border-primary" : "border-border"
+                    className={`flex-none w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImage === index ? "border-primary ring-2 ring-primary/30" : "border-gray-200"
                       }`}
                   >
                     <img
