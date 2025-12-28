@@ -212,83 +212,135 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            <div className={`overflow-hidden rounded-xl border-2 border-border bg-muted relative ${selectedImage === -1 && product.video_url
-                ? videoAspect === "portrait"
-                  ? "aspect-[9/16] max-h-[600px] mx-auto"
-                  : videoAspect === "landscape"
-                    ? "aspect-video"
-                    : "aspect-square"
-                : "aspect-square"
-              }`}>
-              {/* Show video if selected (index -1) and video exists */}
-              {selectedImage === -1 && product.video_url ? (
-                <video
-                  src={product.video_url}
-                  className="w-full h-full object-contain bg-black"
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  controls={false}
-                  onLoadedMetadata={(e) => {
-                    const video = e.currentTarget;
-                    const ratio = video.videoWidth / video.videoHeight;
-                    if (ratio < 0.8) setVideoAspect("portrait");
-                    else if (ratio > 1.2) setVideoAspect("landscape");
-                    else setVideoAspect("square");
-                  }}
-                />
-              ) : (
-                <img
-                  src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                  fetchPriority="high"
-                />
-              )}
-            </div>
-            {/* Thumbnails including video */}
-            <div className="grid grid-cols-5 gap-2">
-              {/* Video thumbnail */}
-              {product.video_url && (
-                <button
-                  onClick={() => setSelectedImage(-1)}
-                  className={`aspect-square overflow-hidden rounded-lg border-2 transition-all relative ${selectedImage === -1 ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
-                    }`}
-                >
-                  {/* Use first image as video preview */}
-                  <img
-                    src={product.images?.[0] || "/placeholder.svg"}
-                    alt="Video preview"
-                    className="w-full h-full object-cover opacity-80"
-                    loading="lazy"
-                  />
-                  {/* Play icon overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <div className="bg-purple-500 rounded-full p-1.5">
-                      <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
+            {/* Mobile: Horizontal swipe gallery */}
+            <div className="md:hidden">
+              <div className="overflow-x-auto snap-x snap-mandatory flex gap-3 pb-3 -mx-4 px-4 scrollbar-hide">
+                {/* Video slide */}
+                {product.video_url && (
+                  <div className="flex-shrink-0 w-full snap-center">
+                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted relative">
+                      <video
+                        src={product.video_url}
+                        className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                        autoPlay
+                        controls={false}
+                      />
+                      <div className="absolute top-3 left-3 bg-purple-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Video
+                      </div>
                     </div>
                   </div>
-                </button>
-              )}
-              {/* Image thumbnails */}
-              {product.images?.map((image: string, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
-                    }`}
-                >
-                  <img
-                    src={image}
-                    alt={`Product view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                )}
+                {/* Image slides */}
+                {product.images?.map((image: string, index: number) => (
+                  <div key={index} className="flex-shrink-0 w-full snap-center">
+                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted">
+                      <img
+                        src={image}
+                        alt={`${product.name} - ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading={index === 0 ? "eager" : "lazy"}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Scroll indicators */}
+              <div className="flex justify-center gap-2 mt-2">
+                {product.video_url && (
+                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+                )}
+                {product.images?.map((_: string, index: number) => (
+                  <div key={index} className="w-2 h-2 rounded-full bg-muted-foreground/30" />
+                ))}
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-1">Swipe to see more →</p>
+            </div>
+
+            {/* Desktop: Original clickable gallery */}
+            <div className="hidden md:block">
+              <div className={`overflow-hidden rounded-xl border-2 border-border bg-muted relative ${selectedImage === -1 && product.video_url
+                  ? videoAspect === "portrait"
+                    ? "aspect-[9/16] max-h-[600px] mx-auto"
+                    : videoAspect === "landscape"
+                      ? "aspect-video"
+                      : "aspect-square"
+                  : "aspect-square"
+                }`}>
+                {/* Show video if selected (index -1) and video exists */}
+                {selectedImage === -1 && product.video_url ? (
+                  <video
+                    src={product.video_url}
+                    className="w-full h-full object-contain bg-black"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    controls={false}
+                    onLoadedMetadata={(e) => {
+                      const video = e.currentTarget;
+                      const ratio = video.videoWidth / video.videoHeight;
+                      if (ratio < 0.8) setVideoAspect("portrait");
+                      else if (ratio > 1.2) setVideoAspect("landscape");
+                      else setVideoAspect("square");
+                    }}
                   />
-                </button>
-              ))}
+                ) : (
+                  <img
+                    src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    fetchPriority="high"
+                  />
+                )}
+              </div>
+              {/* Thumbnails including video */}
+              <div className="grid grid-cols-5 gap-2 mt-4">
+                {/* Video thumbnail */}
+                {product.video_url && (
+                  <button
+                    onClick={() => setSelectedImage(-1)}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all relative ${selectedImage === -1 ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
+                      }`}
+                  >
+                    <img
+                      src={product.images?.[0] || "/placeholder.svg"}
+                      alt="Video preview"
+                      className="w-full h-full object-cover opacity-80"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <div className="bg-purple-500 rounded-full p-1.5">
+                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                )}
+                {/* Image thumbnails */}
+                {product.images?.map((image: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary shadow-hover" : "border-border hover:border-primary/50"
+                      }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`Product view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
