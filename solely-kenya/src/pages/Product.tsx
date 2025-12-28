@@ -214,18 +214,11 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            {/* Mobile Gallery */}
-            <div className="md:hidden" style={{ marginBottom: '12px' }}>
-              {/* Main Image Container */}
+            {/* Mobile Gallery - Same structure as desktop */}
+            <div className="md:hidden">
+              {/* Main Image */}
               <div
-                style={{
-                  position: 'relative',
-                  aspectRatio: '1/1',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  border: '2px solid #e5e7eb',
-                  backgroundColor: '#f3f4f6'
-                }}
+                className="aspect-square overflow-hidden rounded-xl border-2 border-border bg-muted relative cursor-pointer"
                 onClick={() => {
                   setLightboxIndex(selectedImage === -1 ? 0 : selectedImage);
                   setLightboxOpen(true);
@@ -234,7 +227,7 @@ const Product = () => {
                 {selectedImage === -1 && product.video_url ? (
                   <video
                     src={product.video_url}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className="w-full h-full object-cover"
                     muted
                     loop
                     playsInline
@@ -245,137 +238,46 @@ const Product = () => {
                   <img
                     src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
                     alt={product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className="w-full h-full object-cover"
                   />
                 )}
-
-                {/* Left Arrow */}
-                {((product.video_url ? 1 : 0) + (product.images?.length || 0)) > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
-                      const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
-                      const prevIndex = currentIndex > 0 ? currentIndex - 1 : totalItems - 1;
-                      if (product.video_url && prevIndex === 0) {
-                        setSelectedImage(-1);
-                      } else {
-                        setSelectedImage(prevIndex - (product.video_url ? 1 : 0));
-                      }
-                    }}
-                    style={{
-                      position: 'absolute',
-                      left: '8px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      zIndex: 10,
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      borderRadius: '50%',
-                      padding: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <ChevronLeft style={{ height: '20px', width: '20px', color: '#374151' }} />
-                  </button>
-                )}
-
-                {/* Right Arrow */}
-                {((product.video_url ? 1 : 0) + (product.images?.length || 0)) > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const totalItems = (product.video_url ? 1 : 0) + (product.images?.length || 0);
-                      const currentIndex = selectedImage === -1 ? 0 : selectedImage + (product.video_url ? 1 : 0);
-                      const nextIndex = (currentIndex + 1) % totalItems;
-                      if (product.video_url && nextIndex === 0) {
-                        setSelectedImage(-1);
-                      } else {
-                        setSelectedImage(nextIndex - (product.video_url ? 1 : 0));
-                      }
-                    }}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      zIndex: 10,
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      borderRadius: '50%',
-                      padding: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <ChevronRight style={{ height: '20px', width: '20px', color: '#374151' }} />
-                  </button>
-                )}
-
-                {/* Tap to zoom hint */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '8px',
-                  right: '8px',
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  color: 'white',
-                  fontSize: '12px',
-                  padding: '4px 8px',
-                  borderRadius: '4px'
-                }}>
-                  Tap to zoom
-                </div>
               </div>
 
-              {/* Thumbnails Row */}
-              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-                {/* Video Thumbnail */}
+              {/* Thumbnails Grid - 4 columns like desktop */}
+              <div className="grid grid-cols-4 gap-2 mt-3">
+                {/* Video thumbnail */}
                 {product.video_url && (
                   <button
                     onClick={() => setSelectedImage(-1)}
-                    style={{
-                      flexShrink: 0,
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      border: selectedImage === -1 ? '3px solid var(--primary)' : '2px solid #e5e7eb',
-                      position: 'relative'
-                    }}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all relative ${selectedImage === -1 ? "border-primary" : "border-border"
+                      }`}
                   >
                     <img
                       src={product.images?.[0] || "/placeholder.svg"}
-                      alt="Video"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      alt="Video preview"
+                      className="w-full h-full object-cover opacity-80"
                     />
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
-                      <div style={{ background: '#8b5cf6', borderRadius: '50%', padding: '4px' }}>
-                        <svg style={{ height: '12px', width: '12px', color: 'white' }} fill="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <div className="bg-purple-500 rounded-full p-1">
+                        <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />
                         </svg>
                       </div>
                     </div>
                   </button>
                 )}
-                {/* Image Thumbnails */}
+                {/* Image thumbnails */}
                 {product.images?.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    style={{
-                      flexShrink: 0,
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      border: selectedImage === index ? '3px solid var(--primary)' : '2px solid #e5e7eb'
-                    }}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index ? "border-primary" : "border-border"
+                      }`}
                   >
                     <img
                       src={image}
-                      alt={`View ${index + 1}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      alt={`Product view ${index + 1}`}
+                      className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
