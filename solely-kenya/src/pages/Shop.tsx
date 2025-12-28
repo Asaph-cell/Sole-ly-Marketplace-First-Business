@@ -34,6 +34,9 @@ const Shop = () => {
   const uniqueSizes = Array.from(new Set(products.flatMap((p) => p.sizes || []).filter(Boolean))).sort((a, b) => Number(a) - Number(b));
 
   useEffect(() => {
+    // Scroll to top when page loads
+    window.scrollTo(0, 0);
+
     fetchProducts();
 
     // Set category from URL params if present

@@ -89,7 +89,7 @@ const Home = () => {
           .from("products")
           .select("*", { count: 'exact', head: true })
           .eq("status", "active")
-          .ilike("category", category.key);
+          .or(`category.ilike.${category.key},category.ilike.${category.name}`);
 
         if (error) throw error;
         counts[category.key] = count || 0;
@@ -210,6 +210,7 @@ const Home = () => {
                 <Link
                   to={`/shop?category=${category.key}`}
                   className="group block"
+                  onClick={() => window.scrollTo(0, 0)}
                 >
                   <div className="bg-gradient-card border-2 border-border rounded-xl p-6 sm:p-8 text-center hover:shadow-hover hover:border-primary transition-all duration-300 min-h-[120px] sm:min-h-[140px] flex flex-col justify-center">
                     <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
