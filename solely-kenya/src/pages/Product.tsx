@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Shield, ArrowLeft, Bell, BellOff } from "lucide-react";
+import { Star, Shield, ArrowLeft, Bell, BellOff, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -40,6 +40,8 @@ const Product = () => {
   const [priceAlertActive, setPriceAlertActive] = useState(false);
   const [alertLoading, setAlertLoading] = useState(false);
   const [videoAspect, setVideoAspect] = useState<"portrait" | "landscape" | "square">("square");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const { addItem, items } = useCart();
 
   useEffect(() => {
@@ -212,58 +214,77 @@ const Product = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           <div className="space-y-4">
-            {/* Mobile: Horizontal swipe gallery */}
+            {/* Mobile: Main image + thumbnail strip + tap to zoom */}
             <div className="md:hidden">
+              {/* Main display area */}
               <div
-                className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted relative cursor-pointer"
+                onClick={() => {
+                  setLightboxIndex(selectedImage);
+                  setLightboxOpen(true);
+                }}
               >
-                {/* Video slide */}
+                {selectedImage === -1 && product.video_url ? (
+                  <video
+                    src={product.video_url}
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    controls={false}
+                  />
+                ) : (
+                  <img
+                    src={product.images?.[selectedImage === -1 ? 0 : selectedImage] || "/placeholder.svg"}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                  Tap to zoom
+                </div>
+              </div>
+
+              {/* Thumbnail strip */}
+              <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
+                {/* Video thumbnail */}
                 {product.video_url && (
-                  <div className="min-w-[85vw] max-w-[85vw] snap-center first:ml-4 last:mr-4">
-                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted relative">
-                      <video
-                        src={product.video_url}
-                        className="w-full h-full object-cover"
-                        muted
-                        loop
-                        playsInline
-                        autoPlay
-                        controls={false}
-                      />
-                      <div className="absolute top-3 left-3 bg-purple-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                  <button
+                    onClick={() => setSelectedImage(-1)}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 relative ${selectedImage === -1 ? "border-primary" : "border-border"
+                      }`}
+                  >
+                    <img
+                      src={product.images?.[0] || "/placeholder.svg"}
+                      alt="Video"
+                      className="w-full h-full object-cover opacity-70"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-purple-500 rounded-full p-1">
+                        <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />
                         </svg>
-                        Video
                       </div>
                     </div>
-                  </div>
+                  </button>
                 )}
-                {/* Image slides */}
+                {/* Image thumbnails */}
                 {product.images?.map((image: string, index: number) => (
-                  <div key={index} className="min-w-[85vw] max-w-[85vw] snap-center first:ml-4 last:mr-4">
-                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-border bg-muted">
-                      <img
-                        src={image}
-                        alt={`${product.name} - ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
-                    </div>
-                  </div>
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImage === index ? "border-primary" : "border-border"
+                      }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`View ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
                 ))}
               </div>
-              {/* Scroll indicators */}
-              <div className="flex justify-center gap-2 mt-2">
-                {product.video_url && (
-                  <div className="w-2 h-2 rounded-full bg-purple-500" />
-                )}
-                {product.images?.map((_: string, index: number) => (
-                  <div key={index} className="w-2 h-2 rounded-full bg-muted-foreground/30" />
-                ))}
-              </div>
-              <p className="text-xs text-center text-muted-foreground mt-1">← Swipe to see more →</p>
             </div>
 
             {/* Desktop: Original clickable gallery */}
@@ -551,6 +572,52 @@ const Product = () => {
           </Button>
         </div>
       </div>
+
+      {/* Fullscreen Lightbox Modal */}
+      {lightboxOpen && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40 rounded-full p-2"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+
+          {/* Image counter */}
+          <div className="absolute top-4 left-4 bg-black/50 text-white text-sm px-3 py-1 rounded-full">
+            {lightboxIndex + 1} / {product.images?.length || 1}
+          </div>
+
+          {/* Previous button */}
+          {product.images?.length > 1 && (
+            <button
+              onClick={() => setLightboxIndex(prev => prev > 0 ? prev - 1 : (product.images?.length || 1) - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 z-10"
+            >
+              <ChevronLeft className="h-8 w-8 text-white" />
+            </button>
+          )}
+
+          {/* Next button */}
+          {product.images?.length > 1 && (
+            <button
+              onClick={() => setLightboxIndex(prev => prev < (product.images?.length || 1) - 1 ? prev + 1 : 0)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 z-10"
+            >
+              <ChevronRight className="h-8 w-8 text-white" />
+            </button>
+          )}
+
+          {/* Zoomable image */}
+          <img
+            src={product.images?.[lightboxIndex] || "/placeholder.svg"}
+            alt={`${product.name} - ${lightboxIndex + 1}`}
+            className="max-w-full max-h-full object-contain"
+            style={{ touchAction: 'pinch-zoom' }}
+          />
+        </div>
+      )}
     </div>
   );
 };
