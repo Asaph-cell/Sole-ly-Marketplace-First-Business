@@ -246,14 +246,13 @@ const Product = () => {
                 </div>
               </div>
 
-              {/* Thumbnail strip */}
-              <div className="grid grid-cols-5 gap-2 mt-3">
-                {/* Video thumbnail */}
-                {product.video_url && (
+              {/* Thumbnail strip - max 3 unselected images */}
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {/* Show video thumbnail only if not currently selected */}
+                {product.video_url && selectedImage !== -1 && (
                   <button
                     onClick={() => setSelectedImage(-1)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 relative ${selectedImage === -1 ? "border-primary" : "border-border"
-                      }`}
+                    className="aspect-square rounded-lg overflow-hidden border-2 border-border relative"
                   >
                     <img
                       src={product.images?.[0] || "/placeholder.svg"}
@@ -269,21 +268,24 @@ const Product = () => {
                     </div>
                   </button>
                 )}
-                {/* Image thumbnails */}
-                {product.images?.map((image: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 ${selectedImage === index ? "border-primary" : "border-border"
-                      }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`View ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+                {/* Show only unselected images, max 3 total */}
+                {product.images
+                  ?.map((image: string, index: number) => ({ image, index }))
+                  .filter(({ index }) => index !== selectedImage)
+                  .slice(0, product.video_url && selectedImage !== -1 ? 2 : 3)
+                  .map(({ image, index }) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(index)}
+                      className="aspect-square rounded-lg overflow-hidden border-2 border-border"
+                    >
+                      <img
+                        src={image}
+                        alt={`View ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
               </div>
             </div>
 
