@@ -133,7 +133,7 @@ const Home = () => {
                 />
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-bold mb-6 sm:mb-8">
-                Kenya's secure commission-based marketplace. Shop with escrow protection or start selling with zero upfront fees. Your payment is safe until you confirm delivery.
+                Buy and sell shoes with confidence. Your money stays protected until you're happy with your order — that's the Sole-ly promise.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Button size="lg" asChild className="hover:scale-105 transition-transform min-h-[48px] w-full sm:w-auto tap-active">
