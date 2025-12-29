@@ -99,7 +99,7 @@ if %errorlevel% neq 0 (
 echo [SUCCESS] PESAPAL_IPN_URL set to: %PESAPAL_IPN%
 
 echo.
-echo Enter your production domain (e.g., solely.co.ke)
+echo Enter your production domain (e.g., solelyshoes.co.ke)
 set /p DOMAIN="Domain: "
 
 supabase secrets set PESAPAL_CALLBACK_URL=https://%DOMAIN%/orders

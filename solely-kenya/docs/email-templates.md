@@ -30,7 +30,7 @@ MPESA Payment:
 
 The funds should appear in your M-Pesa account within a few minutes. If you don't receive the payment within 1 hour, please contact us.
 
-Need help? Reply to this email or contact support@solely.co.ke
+Need help? Reply to this email or contact support@solelyshoes.co.ke
 
 Happy selling!
 Solely Team
@@ -108,7 +108,7 @@ Your payment (KES {amount}) is held securely in escrow. Follow these steps when 
 
 [Confirm Delivery] [View Order] [File Dispute]
 
-Need help? Reply to this email or contact support@solely.co.ke
+Need help? Reply to this email or contact support@solelyshoes.co.ke
 
 Solely Team
 ```
@@ -151,8 +151,8 @@ Solely Team
 ### Environment Variables Needed:
 ```
 EMAIL_SERVICE_API_KEY=your_api_key
-FROM_EMAIL=noreply@solely.co.ke
-SUPPORT_EMAIL=support@solely.co.ke
+FROM_EMAIL=noreply@solelyshoes.co.ke
+SUPPORT_EMAIL=support@solelyshoes.co.ke
 ```
 
 ### Recommended Service:
