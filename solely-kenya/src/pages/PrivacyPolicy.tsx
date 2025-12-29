@@ -207,7 +207,7 @@ const PrivacyPolicy = () => {
                             <li><strong>Opt-out:</strong> Unsubscribe from marketing communications (transactional emails cannot be opted out)</li>
                         </ul>
                         <p className="text-muted-foreground">
-                            To exercise these rights, contact us at <a href="mailto:privacy@solelyshoes.co.ke" className="text-primary underline">privacy@solelyshoes.co.ke</a>. We will respond within 30 days.
+                            To exercise these rights, contact us at <a href="mailto:contact@solelyshoes.co.ke" className="text-primary underline">contact@solelyshoes.co.ke</a>. We will respond within 30 days.
                         </p>
                     </section>
 
@@ -261,7 +261,7 @@ const PrivacyPolicy = () => {
                         <div className="bg-muted/50 border rounded-lg p-4">
                             <p className="font-semibold mb-2">Solely Marketplace</p>
                             <p className="text-muted-foreground">
-                                Email: <a href="mailto:privacy@solelyshoes.co.ke" className="text-primary underline">privacy@solelyshoes.co.ke</a>
+                                Email: <a href="mailto:contact@solelyshoes.co.ke" className="text-primary underline">contact@solelyshoes.co.ke</a>
                             </p>
                             <p className="text-muted-foreground">
                                 General Inquiries: <a href="mailto:contact@solelyshoes.co.ke" className="text-primary underline">contact@solelyshoes.co.ke</a>
