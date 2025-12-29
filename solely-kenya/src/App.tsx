@@ -94,7 +94,7 @@ const AnimatedRoutes = () => {
         <Route path="/orders" element={<PageWrapper><Orders /></PageWrapper>} />
         <Route path="/orders/:orderId" element={<PageWrapper><Orders /></PageWrapper>} />
         <Route path="/terms" element={<PageWrapper><Terms /></PageWrapper>} />
-        <Route path="/privacypolicy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
+        <Route path="/privacy-policy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
         <Route path="/vendor/dashboard" element={<PageWrapper><VendorDashboard /></PageWrapper>} />
         <Route path="/vendor/products" element={<PageWrapper><VendorProducts /></PageWrapper>} />
         <Route path="/vendor/add-product" element={<PageWrapper><VendorAddProduct /></PageWrapper>} />

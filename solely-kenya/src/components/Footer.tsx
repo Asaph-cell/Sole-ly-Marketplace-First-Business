@@ -178,7 +178,7 @@ const Footer = () => {
               <Link to="/terms" className="block hover:text-primary transition-colors">
                 Terms & Conditions
               </Link>
-              <a href="https://solelyshoes.co.ke/privacypolicy" className="block hover:text-primary transition-colors">
+              <a href="https://solelyshoes.co.ke/privacy-policy" className="block hover:text-primary transition-colors">
                 Privacy Policy
               </a>
             </div>
