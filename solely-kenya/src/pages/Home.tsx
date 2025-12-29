@@ -388,32 +388,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Solely */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <TrendingUp className="h-16 w-16 text-primary mx-auto mb-6" />
-            <h2 className="text-4xl font-bold mb-6">Why Solely Marketplace?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Solely Marketplace is Kenya's secure commission-based shoe marketplace. We protect buyers with escrow payments and help vendors grow with zero upfront costs. Your payment stays safe until you confirm delivery.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-12">
-              <div className="bg-card p-6 rounded-xl border-2 border-border shadow-soft">
-                <h3 className="text-xl font-semibold mb-3">For Buyers</h3>
-                <p className="text-muted-foreground">
-                  Shop with confidence. Your payment is held in escrow until you confirm delivery. If something goes wrong, file a dispute within 3 days for a full refund. Browse verified vendors and compare prices in KES.
-                </p>
-              </div>
-              <div className="bg-card p-6 rounded-xl border-2 border-border shadow-soft">
-                <h3 className="text-xl font-semibold mb-3">For Vendors</h3>
-                <p className="text-muted-foreground">
-                  Start selling with zero upfront fees. We only take a 10% commission when you make a sale. List your shoes, manage orders, and receive payouts directly to your M-Pesa or bank account after delivery confirmation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-hero text-primary-foreground">
