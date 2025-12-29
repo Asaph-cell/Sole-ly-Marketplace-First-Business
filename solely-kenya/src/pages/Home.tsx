@@ -133,7 +133,7 @@ const Home = () => {
                 />
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-bold mb-6 sm:mb-8">
-                Buy and sell shoes with confidence. Your money stays protected until you're happy with your order — that's the Sole-ly promise.
+                Step into style with zero stress. Your money's protected until you're in love with your shoes.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Button size="lg" asChild className="hover:scale-105 transition-transform min-h-[48px] w-full sm:w-auto tap-active">
@@ -198,29 +198,101 @@ const Home = () => {
         </div>
       </section>
 
-      {/* About Sole-ly - For Google OAuth Verification */}
+      {/* About Sole-ly */}
       <section className="py-12 sm:py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto text-center mb-12">
             <ScrollReveal mode="fade-up" delay={0.2}>
-              <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">What is Sole-ly?</h2>
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">Sole-ly</strong> is Kenya's dedicated marketplace built for shoe lovers and verified local vendors.
+                We've removed the "what-if" from online shopping by creating a space where buying and selling footwear is simple, secure, and, above all, built on trust.
+              </p>
             </ScrollReveal>
+          </div>
+
+          {/* The Sole-ly Guarantee */}
+          <div className="max-w-4xl mx-auto mb-16">
             <ScrollReveal mode="fade-up" delay={0.3}>
-              <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
-                <p>
-                  <strong className="text-foreground">Sole-ly</strong> is Kenya's trusted online shoe marketplace that connects shoe lovers with verified local vendors.
-                  We make buying and selling footwear safe, simple, and stress-free.
-                </p>
-                <p>
-                  <strong className="text-foreground">How it works:</strong> When you buy a pair of shoes, your payment goes into a secure escrow account — not directly to the seller.
-                  The vendor ships your order, and once you receive it and confirm you're happy, we release the funds.
-                  If something goes wrong, you can file a dispute and our team will help resolve it.
-                </p>
-                <p>
-                  <strong className="text-foreground">For sellers:</strong> List your shoes with zero upfront costs. We only take a 10% commission when you make a sale — so you grow your business risk-free.
-                </p>
-              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">The Sole-ly Guarantee</h2>
+              <p className="text-center text-muted-foreground mb-8">We believe you should only pay for what you love. Our escrow system ensures your money is always protected.</p>
             </ScrollReveal>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <ScrollReveal mode="zoom-in" delay={0.4}>
+                <div className="bg-muted/30 border rounded-xl p-6 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Lock className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg">Secure Holding</h3>
+                  </div>
+                  <p className="text-muted-foreground text-sm">When you buy a pair, your payment is held in our secure "safety vault," not sent directly to the seller.</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal mode="zoom-in" delay={0.5}>
+                <div className="bg-muted/30 border rounded-xl p-6 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg">Check the Fit</h3>
+                  </div>
+                  <p className="text-muted-foreground text-sm">The vendor ships your order, and you get to see them in person before we release any funds.</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal mode="zoom-in" delay={0.6}>
+                <div className="bg-muted/30 border rounded-xl p-6 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Shield className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg">Your Final Say</h3>
+                  </div>
+                  <p className="text-muted-foreground text-sm">We only release the funds to the seller once you've confirmed you're 100% happy with your new shoes.</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal mode="zoom-in" delay={0.7}>
+                <div className="bg-muted/30 border rounded-xl p-6 h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-primary/10 p-2 rounded-full">
+                      <Shield className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg">We've Got Your Back</h3>
+                  </div>
+                  <p className="text-muted-foreground text-sm">If something isn't right, our support team is ready to step in and resolve any disputes immediately.</p>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* For Vendors */}
+          <div className="max-w-4xl mx-auto">
+            <ScrollReveal mode="fade-up" delay={0.4}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4">For Our Vendors: Grow Your Business, Risk-Free</h2>
+              <p className="text-center text-muted-foreground mb-8">We succeed only when you do. Whether you're an established shop or a rising local brand, Sole-ly helps you reach more customers without the overhead.</p>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <ScrollReveal mode="zoom-in" delay={0.5}>
+                <div className="bg-muted/30 border rounded-xl p-6 text-center h-full">
+                  <DollarSign className="h-10 w-10 text-primary mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">List for Free</h3>
+                  <p className="text-muted-foreground text-sm">Post your inventory with zero upfront costs or listing fees.</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal mode="zoom-in" delay={0.6}>
+                <div className="bg-muted/30 border rounded-xl p-6 text-center h-full">
+                  <TrendingUp className="h-10 w-10 text-primary mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">Simple Commission</h3>
+                  <p className="text-muted-foreground text-sm">We only take a flat 10% commission when you make a successful sale.</p>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal mode="zoom-in" delay={0.7}>
+                <div className="bg-muted/30 border rounded-xl p-6 text-center h-full">
+                  <Lock className="h-10 w-10 text-primary mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">Built-in Trust</h3>
+                  <p className="text-muted-foreground text-sm">We handle the payment security so you can focus on what you do best — selling great shoes!</p>
+                </div>
+              </ScrollReveal>
+            </div>
           </div>
         </div>
       </section>
