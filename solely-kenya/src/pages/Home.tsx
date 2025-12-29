@@ -219,13 +219,6 @@ const Home = () => {
                 <p>
                   <strong className="text-foreground">For sellers:</strong> List your shoes with zero upfront costs. We only take a 10% commission when you make a sale — so you grow your business risk-free.
                 </p>
-                <div className="bg-muted/50 border rounded-lg p-4 mt-6">
-                  <p className="text-sm">
-                    <strong className="text-foreground">Your data, your control:</strong> We only collect your email, name, and phone number to process orders and keep you updated.
-                    Delivery addresses are shared with vendors solely to fulfill your orders. We never sell your personal information.
-                    Read our <Link to="/privacy" className="text-primary underline hover:no-underline">Privacy Policy</Link> for full details.
-                  </p>
-                </div>
               </div>
             </ScrollReveal>
           </div>
