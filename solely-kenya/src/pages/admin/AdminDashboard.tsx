@@ -185,6 +185,9 @@ const AdminDashboard = () => {
         totalViews: viewsCount || 0,
       });
 
+      // Debug: log products data
+      console.log("Products data:", productsData);
+
       setProducts(productsData || []);
       setRecentOrders(recentOrdersData || []);
       setOpenDisputes(disputesData || []);
