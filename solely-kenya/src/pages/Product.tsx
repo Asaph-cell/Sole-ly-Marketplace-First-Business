@@ -45,6 +45,11 @@ const Product = () => {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const { addItem, items } = useCart();
 
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   useEffect(() => {
     if (id) {
       fetchProduct();
@@ -542,7 +547,7 @@ const Product = () => {
       </div>
 
       {/* Vendor Rating Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-28 md:pb-12">
         <VendorRating vendorId={product.vendor_id} productId={product.id} />
       </div>
 
