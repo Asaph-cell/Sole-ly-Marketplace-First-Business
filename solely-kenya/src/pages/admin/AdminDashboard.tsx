@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import {
   Package, Users, ShoppingCart, DollarSign, AlertCircle, Eye,
   TrendingUp, Clock, CheckCircle, XCircle, Truck, ArrowUpRight,
-  Activity, Calendar, BarChart3
+  Activity, Calendar, BarChart3, Mail, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SneakerLoader } from "@/components/ui/SneakerLoader";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const AdminDashboard = () => {
   const { user, loading } = useAuth();
@@ -53,6 +64,13 @@ const AdminDashboard = () => {
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [ordersByStatus, setOrdersByStatus] = useState<{ status: string, count: number }[]>([]);
   const [dailyRevenue, setDailyRevenue] = useState<{ date: string, revenue: number, orders: number }[]>([]);
+
+  // Announcement state
+  const [announcementSubject, setAnnouncementSubject] = useState("");
+  const [announcementMessage, setAnnouncementMessage] = useState("");
+  const [announcementAudience, setAnnouncementAudience] = useState<"all" | "vendors" | "customers">("all");
+  const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -505,6 +523,9 @@ const AdminDashboard = () => {
                 <TabsTrigger value="disputes" className={stats.openDisputes > 0 ? "text-red-600" : ""}>
                   Open Disputes ({stats.openDisputes})
                 </TabsTrigger>
+                <TabsTrigger value="announcements" className="flex items-center gap-1">
+                  <Mail className="h-4 w-4" /> Announcements
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="orders">
@@ -632,7 +653,173 @@ const AdminDashboard = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              <TabsContent value="announcements">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Mail className="h-5 w-5" />
+                      Send Announcement
+                    </CardTitle>
+                    <CardDescription>
+                      Send email announcements to your users. Select your audience and compose your message.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Audience Selector */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Target Audience</label>
+                      <Select
+                        value={announcementAudience}
+                        onValueChange={(value: "all" | "vendors" | "customers") => setAnnouncementAudience(value)}
+                      >
+                        <SelectTrigger className="w-full md:w-[300px]">
+                          <SelectValue placeholder="Select audience" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              All Users ({stats.totalCustomers})
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="vendors">
+                            <div className="flex items-center gap-2">
+                              <Package className="h-4 w-4" />
+                              Vendors Only ({stats.totalVendors})
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="customers">
+                            <div className="flex items-center gap-2">
+                              <ShoppingCart className="h-4 w-4" />
+                              Customers Only ({stats.totalCustomers - stats.totalVendors})
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Subject */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Subject</label>
+                      <Input
+                        placeholder="e.g., Exciting News from Sole-ly!"
+                        value={announcementSubject}
+                        onChange={(e) => setAnnouncementSubject(e.target.value)}
+                        maxLength={100}
+                      />
+                    </div>
+
+                    {/* Message */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Message (HTML supported)</label>
+                      <Textarea
+                        placeholder="Write your announcement here... You can use basic HTML like <b>bold</b>, <i>italic</i>, <a href='...'>links</a>"
+                        value={announcementMessage}
+                        onChange={(e) => setAnnouncementMessage(e.target.value)}
+                        rows={8}
+                        className="font-mono text-sm"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Tip: Use &lt;p&gt; for paragraphs, &lt;b&gt; for bold, &lt;a href="..."&gt; for links
+                      </p>
+                    </div>
+
+                    {/* Preview */}
+                    {announcementMessage && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Preview</label>
+                        <div
+                          className="border rounded-lg p-4 bg-muted/50"
+                          dangerouslySetInnerHTML={{ __html: announcementMessage }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Send Button */}
+                    <Button
+                      onClick={() => setShowConfirmDialog(true)}
+                      disabled={!announcementSubject.trim() || !announcementMessage.trim() || sendingAnnouncement}
+                      className="w-full md:w-auto"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {sendingAnnouncement ? "Sending..." : "Send Announcement"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
+
+            {/* Confirmation Dialog */}
+            <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirm Send</DialogTitle>
+                  <DialogDescription>
+                    You are about to send an email to{" "}
+                    <strong>
+                      {announcementAudience === "all"
+                        ? `all ${stats.totalCustomers} users`
+                        : announcementAudience === "vendors"
+                          ? `${stats.totalVendors} vendors`
+                          : `${stats.totalCustomers - stats.totalVendors} customers`}
+                    </strong>.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <p className="text-sm"><strong>Subject:</strong> {announcementSubject}</p>
+                  <div className="mt-2 p-3 bg-muted rounded-lg text-sm max-h-32 overflow-y-auto" dangerouslySetInnerHTML={{ __html: announcementMessage }} />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      setShowConfirmDialog(false);
+                      setSendingAnnouncement(true);
+                      try {
+                        const { data: sessionData } = await supabase.auth.getSession();
+                        const response = await supabase.functions.invoke("send-announcement", {
+                          body: {
+                            subject: announcementSubject,
+                            htmlContent: announcementMessage,
+                            targetAudience: announcementAudience,
+                          },
+                        });
+
+                        if (response.error) {
+                          throw new Error(response.error.message);
+                        }
+
+                        const result = response.data;
+                        if (result.success) {
+                          toast({
+                            title: "Announcement Sent!",
+                            description: result.message,
+                          });
+                          setAnnouncementSubject("");
+                          setAnnouncementMessage("");
+                        } else {
+                          throw new Error(result.error || "Failed to send");
+                        }
+                      } catch (error: any) {
+                        toast({
+                          title: "Failed to send",
+                          description: error.message || "Something went wrong",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setSendingAnnouncement(false);
+                      }
+                    }}
+                    disabled={sendingAnnouncement}
+                  >
+                    {sendingAnnouncement ? "Sending..." : "Confirm & Send"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </main>
