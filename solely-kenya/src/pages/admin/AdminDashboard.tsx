@@ -133,9 +133,9 @@ const AdminDashboard = () => {
         supabase.from("orders").select("total_ksh"),
         supabase.from("orders").select("total_ksh").gte("created_at", monthStart),
         supabase.from("product_views").select("*", { count: "exact", head: true }),
-        // Get all products with vendor info via profiles
+        // Get all products (simplified query without join)
         supabase.from("products")
-          .select(`id, name, price, status, images, created_at, vendor_id, profiles!products_vendor_id_fkey (full_name, store_name)`)
+          .select(`id, name, price, status, images, created_at, vendor_id`)
           .order("created_at", { ascending: false })
           .limit(50),
         // Recent orders
@@ -185,13 +185,7 @@ const AdminDashboard = () => {
         totalViews: viewsCount || 0,
       });
 
-      // Map products with vendor info
-      const mappedProducts = (productsData || []).map((p: any) => ({
-        ...p,
-        vendor: p.profiles || null
-      }));
-
-      setProducts(mappedProducts);
+      setProducts(productsData || []);
       setRecentOrders(recentOrdersData || []);
       setOpenDisputes(disputesData || []);
       setDailyRevenue(dailyRevenueArray);
@@ -498,7 +492,7 @@ const AdminDashboard = () => {
                             <div className="flex-1 min-w-0">
                               <p className="font-medium truncate">{product.name}</p>
                               <p className="text-xs text-muted-foreground">
-                                KES {product.price?.toLocaleString()} • {product.vendor?.store_name || product.vendor?.full_name || "Unknown"}
+                                KES {product.price?.toLocaleString()}
                               </p>
                             </div>
 
