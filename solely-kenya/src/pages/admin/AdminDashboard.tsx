@@ -54,6 +54,7 @@ const AdminDashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [openDisputes, setOpenDisputes] = useState<any[]>([]);
+  const [dailyRevenue, setDailyRevenue] = useState<{ date: string, revenue: number, orders: number }[]>([]);
 
   // Announcement state
   const [announcementSubject, setAnnouncementSubject] = useState("");
@@ -101,6 +102,7 @@ const AdminDashboard = () => {
   const loadData = async () => {
     setLoadingData(true);
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
     try {
       const [
@@ -118,6 +120,7 @@ const AdminDashboard = () => {
         { data: productsData },
         { data: recentOrdersData },
         { data: disputesData },
+        { data: dailyOrdersData },
       ] = await Promise.all([
         supabase.from("products").select("*", { count: "exact", head: true }),
         supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "active"),
@@ -130,9 +133,9 @@ const AdminDashboard = () => {
         supabase.from("orders").select("total_ksh"),
         supabase.from("orders").select("total_ksh").gte("created_at", monthStart),
         supabase.from("product_views").select("*", { count: "exact", head: true }),
-        // Get all products with vendor info
+        // Get all products with vendor info via profiles
         supabase.from("products")
-          .select(`id, name, price, status, images, created_at, vendor:vendor_id (full_name, store_name)`)
+          .select(`id, name, price, status, images, created_at, vendor_id, profiles!products_vendor_id_fkey (full_name, store_name)`)
           .order("created_at", { ascending: false })
           .limit(50),
         // Recent orders
@@ -145,11 +148,28 @@ const AdminDashboard = () => {
           .select(`id, reason, opened_at, order_id, customer:customer_id (full_name)`)
           .eq("status", "open")
           .limit(5),
+        // Daily orders for graph (last 30 days)
+        supabase.from("orders")
+          .select("created_at, total_ksh")
+          .gte("created_at", thirtyDaysAgo)
+          .order("created_at", { ascending: true }),
       ]);
 
       const totalCommission = (commissionsAll || []).reduce((sum: number, r: any) => sum + (r.commission_amount || 0), 0);
       const totalRevenue = (ordersAll || []).reduce((sum: number, r: any) => sum + (r.total_ksh || 0), 0);
       const monthlyRevenue = (ordersMonth || []).reduce((sum: number, r: any) => sum + (r.total_ksh || 0), 0);
+
+      // Process daily revenue for graph
+      const dailyData: Record<string, { revenue: number, orders: number }> = {};
+      (dailyOrdersData || []).forEach((order: any) => {
+        const date = new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (!dailyData[date]) dailyData[date] = { revenue: 0, orders: 0 };
+        dailyData[date].revenue += order.total_ksh || 0;
+        dailyData[date].orders += 1;
+      });
+      const dailyRevenueArray = Object.entries(dailyData).map(([date, data]) => ({
+        date, revenue: data.revenue, orders: data.orders
+      }));
 
       setStats({
         totalProducts: productsCount || 0,
@@ -165,9 +185,16 @@ const AdminDashboard = () => {
         totalViews: viewsCount || 0,
       });
 
-      setProducts(productsData || []);
+      // Map products with vendor info
+      const mappedProducts = (productsData || []).map((p: any) => ({
+        ...p,
+        vendor: p.profiles || null
+      }));
+
+      setProducts(mappedProducts);
       setRecentOrders(recentOrdersData || []);
       setOpenDisputes(disputesData || []);
+      setDailyRevenue(dailyRevenueArray);
     } catch (error) {
       console.error("Error loading data:", error);
       toast({ title: "Error", description: "Failed to load dashboard data", variant: "destructive" });
@@ -177,7 +204,7 @@ const AdminDashboard = () => {
   };
 
   const toggleProductStatus = async (productId: string, currentStatus: string) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const newStatus = currentStatus === "active" ? "draft" : "active";
     try {
       const { error } = await supabase
         .from("products")
@@ -379,43 +406,64 @@ const AdminDashboard = () => {
 
               {/* Overview Tab */}
               <TabsContent value="overview">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Orders</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {recentOrders.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">No orders yet</p>
-                    ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Order</TableHead>
-                            <TableHead>Customer</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Date</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {recentOrders.map((order) => (
-                            <TableRow key={order.id}>
-                              <TableCell className="font-mono text-sm">#{order.id.slice(0, 8)}</TableCell>
-                              <TableCell>{order.profiles?.full_name || "Guest"}</TableCell>
-                              <TableCell>KES {order.total_ksh?.toLocaleString()}</TableCell>
-                              <TableCell>
-                                <Badge variant="outline">{formatStatus(order.status)}</Badge>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">
-                                {new Date(order.created_at).toLocaleDateString()}
-                              </TableCell>
-                            </TableRow>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Revenue Chart */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Revenue (Last 7 Days)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {dailyRevenue.length === 0 ? (
+                        <p className="text-muted-foreground text-center py-8">No order data yet</p>
+                      ) : (
+                        <div className="flex items-end gap-1 h-32">
+                          {dailyRevenue.slice(-7).map((day, idx) => {
+                            const maxRevenue = Math.max(...dailyRevenue.slice(-7).map(d => d.revenue), 1);
+                            return (
+                              <div key={idx} className="flex flex-col items-center flex-1">
+                                <div
+                                  className="w-full bg-primary/80 rounded-t hover:bg-primary transition-colors cursor-pointer relative group"
+                                  style={{ height: `${Math.max((day.revenue / maxRevenue) * 100, 4)}px` }}
+                                >
+                                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                    KES {day.revenue.toLocaleString()}
+                                  </div>
+                                </div>
+                                <span className="text-[10px] text-muted-foreground mt-1">{day.date}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Orders */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Recent Orders</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {recentOrders.length === 0 ? (
+                        <p className="text-muted-foreground text-center py-8">No orders yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {recentOrders.slice(0, 5).map((order) => (
+                            <div key={order.id} className="flex items-center justify-between text-sm">
+                              <div>
+                                <span className="font-mono">#{order.id.slice(0, 6)}</span>
+                                <span className="text-muted-foreground ml-2">{order.profiles?.full_name || "Guest"}</span>
+                              </div>
+                              <div className="text-right">
+                                <span className="font-medium">KES {order.total_ksh?.toLocaleString()}</span>
+                              </div>
+                            </div>
                           ))}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </CardContent>
-                </Card>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
               {/* Products Tab */}
