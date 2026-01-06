@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Mail, LogOut, LayoutDashboard, Menu, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -18,9 +19,21 @@ interface MobileNavProps {
 }
 
 export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, cartCount = 0 }: MobileNavProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const supportEmail = "contact@solelyshoes.co.ke";
+
+  // Close menu when navigating
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
+  const handleLogoutClick = async () => {
+    setIsOpen(false);
+    await onLogout();
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <Menu className="h-6 w-6" />
@@ -33,13 +46,14 @@ export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, ca
               key={link.path}
               to={link.path}
               className="text-lg font-medium hover:text-primary transition-colors"
+              onClick={handleLinkClick}
             >
               {link.name}
             </Link>
           ))}
           <div className="flex flex-col gap-3 mt-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/cart" className="flex items-center justify-between">
+              <Link to="/cart" className="flex items-center justify-between" onClick={handleLinkClick}>
                 <span className="flex items-center gap-2">
                   <ShoppingCart className="h-4 w-4" />
                   Cart
@@ -63,22 +77,22 @@ export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, ca
             {!user ? (
               <>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/auth">Login</Link>
+                  <Link to="/auth" onClick={handleLinkClick}>Login</Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link to="/vendor">Become a Vendor</Link>
+                  <Link to="/vendor" onClick={handleLinkClick}>Become a Vendor</Link>
                 </Button>
               </>
             ) : isVendor ? (
               isVendorPage ? (
                 <>
                   <Button size="sm" asChild>
-                    <Link to="/orders">
+                    <Link to="/orders" onClick={handleLinkClick}>
                       <ShoppingBag className="h-4 w-4 mr-2" />
                       My Purchases
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={onLogout}>
+                  <Button variant="outline" size="sm" onClick={handleLogoutClick}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
@@ -86,24 +100,24 @@ export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, ca
               ) : (
                 <>
                   <Button size="sm" asChild>
-                    <Link to="/vendor/dashboard">
+                    <Link to="/vendor/dashboard" onClick={handleLinkClick}>
                       <LayoutDashboard className="h-4 w-4 mr-2" />
                       Dashboard
                     </Link>
                   </Button>
                   <Button size="sm" variant="outline" asChild>
-                    <Link to="/vendor/orders">
+                    <Link to="/vendor/orders" onClick={handleLinkClick}>
                       <ShoppingBag className="h-4 w-4 mr-2" />
                       Vendor Orders
                     </Link>
                   </Button>
                   <Button size="sm" variant="ghost" asChild>
-                    <Link to="/orders">
+                    <Link to="/orders" onClick={handleLinkClick}>
                       <ShoppingBag className="h-4 w-4 mr-2" />
                       My Purchases
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" onClick={onLogout}>
+                  <Button variant="outline" size="sm" onClick={handleLogoutClick}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
@@ -112,15 +126,15 @@ export const MobileNav = ({ navLinks, user, isVendor, isVendorPage, onLogout, ca
             ) : (
               <>
                 <Button size="sm" asChild>
-                  <Link to="/orders">
+                  <Link to="/orders" onClick={handleLinkClick}>
                     <ShoppingBag className="h-4 w-4 mr-2" />
                     My Orders
                   </Link>
                 </Button>
                 <Button size="sm" variant="ghost" asChild>
-                  <Link to="/vendor/register">Become a Vendor</Link>
+                  <Link to="/vendor/register" onClick={handleLinkClick}>Become a Vendor</Link>
                 </Button>
-                <Button variant="outline" size="sm" onClick={onLogout}>
+                <Button variant="outline" size="sm" onClick={handleLogoutClick}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </Button>
