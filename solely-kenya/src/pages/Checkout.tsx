@@ -16,13 +16,16 @@ import { calculateDeliveryFee } from "@/utils/deliveryPricing";
 
 const paymentOptions = [
   { value: "paystack", label: "Pay with M-Pesa / Card (Online)", icon: "💳", description: "Automatic payment via Paystack" },
-  { value: "mpesa", label: "M-Pesa Paybill (Manual)", icon: "📱", description: "Manually pay via M-Pesa Paybill" },
 ];
 
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+
+  // CHECKOUT TEMPORARILY DISABLED
+  // Remove this block to re-enable checkout
+  const CHECKOUT_DISABLED = true;
 
   const [processing, setProcessing] = useState(false);
   const [paymentGateway, setPaymentGateway] = useState<string>("paystack");
@@ -102,6 +105,31 @@ const Checkout = () => {
       navigate("/auth?redirect=/checkout");
     }
   }, [authLoading, user, navigate]);
+
+  if (CHECKOUT_DISABLED) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 text-center px-4 bg-muted/20">
+        <div className="p-6 bg-background rounded-full shadow-sm">
+          <Store className="h-12 w-12 text-muted-foreground" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Checkout Unavailable</h1>
+          <p className="max-w-md text-muted-foreground">
+            We are currently upgrading our payment system to ensure a seamless experience.
+            Checkout is temporarily disabled.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Please check back soon.
+          </p>
+        </div>
+        <div className="flex gap-4">
+          <Button asChild variant="outline" size="lg">
+            <Link to="/shop">Continue Browsing</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
