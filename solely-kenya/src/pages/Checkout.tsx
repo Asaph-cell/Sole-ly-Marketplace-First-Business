@@ -24,7 +24,7 @@ const Checkout = () => {
   const { user, loading: authLoading } = useAuth();
 
   // CHECKOUT ENABLED
-  const CHECKOUT_DISABLED = false;
+  const CHECKOUT_DISABLED = true;
 
   const [processing, setProcessing] = useState(false);
   const [paymentGateway, setPaymentGateway] = useState<string>("intasend");
