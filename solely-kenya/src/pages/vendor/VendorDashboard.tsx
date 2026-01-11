@@ -300,6 +300,7 @@ const VendorDashboard = () => {
                     <div className="text-2xl font-bold text-green-700 dark:text-green-300">KES {stats.paidOut.toLocaleString()}</div>
                     <p className="text-xs text-green-600 dark:text-green-400">Sent to your M-Pesa</p>
                   </CardContent>
+                </Card>
               </div>
 
               {/* New Payout Management Section */}
