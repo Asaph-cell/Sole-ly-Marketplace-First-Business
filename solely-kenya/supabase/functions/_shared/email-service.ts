@@ -382,7 +382,7 @@ export const emailTemplates = {
           <div class="next-steps">
             <strong>What happens next?</strong>
             <ol style="margin: 10px 0; padding-left: 20px;">
-              <li>Vendor reviews and confirms your order (within 24 hours)</li>
+              <li>Vendor reviews and confirms your order (within 48 hours)</li>
               ${data.isPickup
       ? `<li>Vendor prepares your order for pickup</li>
                    <li>You'll be notified when it's ready to collect</li>
