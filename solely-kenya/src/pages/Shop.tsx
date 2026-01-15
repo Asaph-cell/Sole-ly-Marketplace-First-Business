@@ -10,6 +10,7 @@ import { Filter, X } from "lucide-react";
 import { CATEGORIES, getCategoryName } from "@/lib/categories";
 import { ACCESSORY_TYPES, getAccessoryTypeName } from "@/lib/accessoryTypes";
 import { SneakerLoader } from "@/components/ui/SneakerLoader";
+import { SEO } from "@/components/SEO";
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -174,6 +175,15 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen py-4 sm:py-8 overflow-x-hidden">
+      <SEO
+        title={isAccessoriesView ? "Shop Shoe Accessories" : selectedCategory !== "all" ? `Shop ${getCategoryName(selectedCategory)} Shoes` : "Shop All Shoes"}
+        description={`Browse ${filteredProducts.length} ${isAccessoriesView ? "shoe care products and accessories" : "quality shoes"} from trusted vendors across Kenya. Filter by brand, size, condition & price.`}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Shop", url: "/shop" },
+          ...(selectedCategory !== "all" ? [{ name: getCategoryName(selectedCategory), url: `/shop?category=${selectedCategory}` }] : [])
+        ]}
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">

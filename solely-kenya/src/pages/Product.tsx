@@ -201,8 +201,27 @@ const Product = () => {
       {product && (
         <SEO
           title={product.name}
-          description={product.description || `Buy ${product.name} at Solely Marketplace`}
+          description={product.description || `Buy ${product.name} at Solely Kenya. ${product.brand ? `Brand: ${product.brand}.` : ''} Price: KES ${product.price_ksh.toLocaleString()}.`}
           image={product.images?.[0]}
+          type="product"
+          canonical={`https://solelyshoes.co.ke/product/${product.id}`}
+          product={{
+            name: product.name,
+            price: product.price_ksh,
+            currency: "KES",
+            condition: product.condition || "new",
+            availability: product.stock > 0 ? "InStock" : "OutOfStock",
+            images: product.images || [],
+            brand: product.brand,
+            sku: product.id,
+            description: product.description
+          }}
+          breadcrumbs={[
+            { name: "Home", url: "/" },
+            { name: "Shop", url: "/shop" },
+            { name: product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : "Shoes", url: product.category ? `/shop?category=${product.category}` : "/shop" },
+            { name: product.name, url: `/product/${product.id}` }
+          ]}
         />
       )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

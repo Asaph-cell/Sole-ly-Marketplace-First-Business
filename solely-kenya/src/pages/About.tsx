@@ -3,11 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/solely-logo.svg";
+import { SEO } from "@/components/SEO";
 
 const About = () => {
   const { isVendor } = useAuth();
   return (
     <div className="min-h-screen py-12">
+      <SEO
+        title="About Us"
+        description="Kenya's friendly shoe marketplace. Learn about Solely Marketplace's mission to connect shoe lovers with trusted vendors across Kenya through secure escrow-protected transactions."
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "About", url: "/about" }
+        ]}
+      />
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="max-w-3xl mx-auto text-center mb-16">

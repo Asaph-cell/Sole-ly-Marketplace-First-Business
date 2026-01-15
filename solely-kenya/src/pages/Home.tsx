@@ -13,6 +13,7 @@ import { CATEGORIES, MAIN_CATEGORIES, OTHER_CATEGORIES } from "@/lib/categories"
 import { MoreHorizontal } from "lucide-react";
 import { PendingOrdersBanner } from "@/components/vendor/PendingOrdersBanner";
 import { SneakerLoader } from "@/components/ui/SneakerLoader";
+import { SEO } from "@/components/SEO";
 
 
 const Home = () => {
@@ -104,6 +105,12 @@ const Home = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden">
+      <SEO
+        title="Buy & Sell Shoes in Kenya"
+        description="Kenya's friendly shoe marketplace. Buy quality shoes from trusted vendors or start selling your shoes today. Delivered Nairobi & Kenya-wide. Shop sneakers, casual, formal & sports shoes."
+        isHomepage={true}
+      />
+
       {/* Pending Orders Banner */}
       <PendingOrdersBanner />
 

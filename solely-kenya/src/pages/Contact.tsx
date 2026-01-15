@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,14 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen py-12">
+      <SEO
+        title="Contact Us"
+        description="Contact Solely Marketplace for complaints, inquiries, or support. We respond to all inquiries within 24 hours. Email us at contact@solelyshoes.co.ke."
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Contact", url: "/contact" }
+        ]}
+      />
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
