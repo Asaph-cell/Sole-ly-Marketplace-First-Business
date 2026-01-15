@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -611,7 +612,7 @@ const AdminDashboard = () => {
                     {announcementMessage && (
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Preview</label>
-                        <div className="border rounded p-4 bg-muted/50" dangerouslySetInnerHTML={{ __html: announcementMessage }} />
+                        <div className="border rounded p-4 bg-muted/50" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(announcementMessage) }} />
                       </div>
                     )}
 

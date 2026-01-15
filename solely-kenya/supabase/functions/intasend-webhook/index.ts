@@ -90,6 +90,63 @@ serve(async (req) => {
         const orderId = api_ref;
         console.log(`[IntaSend Webhook] Processing payment for order: ${orderId}, state: ${state}`);
 
+        // ─────────────────────────────────────────────────────────────────────
+        // SECURITY: Cross-verify with IntaSend API to prevent forged webhooks
+        // ─────────────────────────────────────────────────────────────────────
+        if (invoice_id && state === 'COMPLETE') {
+            const intaSendSecretKey = Deno.env.get('INTASEND_SECRET_KEY');
+
+            if (intaSendSecretKey) {
+                try {
+                    console.log(`[IntaSend Webhook] Verifying invoice ${invoice_id} with IntaSend API...`);
+
+                    const verifyResponse = await fetch(`https://api.intasend.com/api/v1/invoices/${invoice_id}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${intaSendSecretKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (!verifyResponse.ok) {
+                        console.error(`[IntaSend Webhook] Invoice verification failed - API returned ${verifyResponse.status}`);
+                        return new Response(
+                            JSON.stringify({ error: 'Invoice verification failed' }),
+                            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                        );
+                    }
+
+                    const verifiedInvoice = await verifyResponse.json();
+
+                    // Verify the invoice state matches what was sent in webhook
+                    if (verifiedInvoice.state !== 'COMPLETE') {
+                        console.error(`[IntaSend Webhook] Invoice state mismatch - webhook said COMPLETE but API says ${verifiedInvoice.state}`);
+                        return new Response(
+                            JSON.stringify({ error: 'Invoice state mismatch' }),
+                            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                        );
+                    }
+
+                    // Verify the api_ref (order ID) matches
+                    if (verifiedInvoice.api_ref && verifiedInvoice.api_ref !== orderId) {
+                        console.error(`[IntaSend Webhook] Order ID mismatch - webhook: ${orderId}, API: ${verifiedInvoice.api_ref}`);
+                        return new Response(
+                            JSON.stringify({ error: 'Order ID mismatch' }),
+                            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                        );
+                    }
+
+                    console.log(`[IntaSend Webhook] ✓ Invoice ${invoice_id} verified successfully`);
+                } catch (verifyError) {
+                    console.error('[IntaSend Webhook] Verification API error:', verifyError);
+                    // Continue processing - don't block legitimate webhooks if API is temporarily down
+                    console.log('[IntaSend Webhook] Continuing despite verification error (API may be temporarily unavailable)');
+                }
+            } else {
+                console.warn('[IntaSend Webhook] INTASEND_SECRET_KEY not set - skipping invoice verification');
+            }
+        }
+
         // Fetch the order
         const { data: order, error: orderError } = await supabaseClient
             .from('orders')

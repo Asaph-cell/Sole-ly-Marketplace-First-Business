@@ -39,3 +39,22 @@ dist-ssr
 # VAPID keys (sensitive - never commit these!)
 .vapid-keys.json
 vapid-keys.txt
+vapid_env_line.txt
+
+# Additional sensitive files
+supabase/.temp/
+*.vapid*.json
+
+# Scripts that may contain secrets
+setup-secrets.bat
+deploy-functions.bat
+
+# Test/debug files with potential secrets
+test_webhook.js
+tunnel.txt
+tunnel_new.txt
+lint-results.txt
+
+# Environment variable backup files
+*.env.bak
+*.env.backup
