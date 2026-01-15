@@ -480,7 +480,7 @@ const AdminDisputes = () => {
                                                     rel="noopener noreferrer"
                                                     className="block"
                                                 >
-                                                    {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                                    {/\.(jpg|jpeg|png|gif|webp)/i.test(url) ? (
                                                         <img
                                                             src={url}
                                                             alt={`Buyer Evidence ${idx + 1}`}
@@ -527,7 +527,7 @@ const AdminDisputes = () => {
                                                                 rel="noopener noreferrer"
                                                                 className="block"
                                                             >
-                                                                {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                                                {/\.(jpg|jpeg|png|gif|webp)/i.test(url) ? (
                                                                     <img
                                                                         src={url}
                                                                         alt={`Vendor Evidence ${idx + 1}`}
