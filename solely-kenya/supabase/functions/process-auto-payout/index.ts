@@ -1,6 +1,6 @@
 /**
  * Automatic Payout Processor
- * Triggers when vendor balance reaches KES 1,500
+ * Triggers when vendor balance reaches KES 250
  * Platform pays the KES 100 IntaSend payout fee
  */
 
@@ -12,7 +12,7 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MINIMUM_AUTO_PAYOUT = 250; // TEMP: lowered from 1500 for testing
+const MINIMUM_AUTO_PAYOUT = 250;
 const PAYOUT_FEE = 100;
 const INTASEND_SECRET_KEY = Deno.env.get('INTASEND_SECRET_KEY');
 const INTASEND_PUBLISHABLE_KEY = Deno.env.get('INTASEND_PUBLISHABLE_KEY');

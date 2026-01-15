@@ -1,7 +1,7 @@
 /**
  * Check and Process Automatic Payouts
  * Called by cron job every minute
- * Finds vendors with balance >= KES 1,500 and processes payouts directly
+ * Finds vendors with balance >= KES 250 and processes payouts directly
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -12,7 +12,7 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MINIMUM_AUTO_PAYOUT = 250; // TEMP: lowered from 1500 for testing
+const MINIMUM_AUTO_PAYOUT = 250;
 const PAYOUT_FEE = 100;
 
 serve(async (req: Request) => {

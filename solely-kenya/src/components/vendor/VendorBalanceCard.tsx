@@ -17,8 +17,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const MINIMUM_AUTO_PAYOUT = 1500;
-const MINIMUM_MANUAL_PAYOUT = 500;
+const MINIMUM_AUTO_PAYOUT = 250;
+const MINIMUM_MANUAL_PAYOUT = 250;
 const PAYOUT_FEE = 100;
 
 interface VendorBalance {
@@ -170,23 +170,7 @@ export function VendorBalanceCard({ vendorId }: { vendorId: string }) {
                         </Button>
                     )}
 
-                    {/* Info Text */}
-                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-                        <p className="text-xs text-muted-foreground flex items-start gap-2">
-                            <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                            <span>
-                                <strong>Automatic payouts</strong> trigger instantly when balance reaches <strong>KES 1,500</strong>.
-                                Platform pays the KES 100 processing fee.
-                            </span>
-                        </p>
-                        <p className="text-xs text-muted-foreground flex items-start gap-2">
-                            <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                            <span>
-                                <strong>Manual payouts</strong> available for balances above <strong>KES 500</strong>.
-                                KES 100 fee deducted from your balance.
-                            </span>
-                        </p>
-                    </div>
+
                 </CardContent>
             </Card>
 
