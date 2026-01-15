@@ -249,7 +249,14 @@ export const emailTemplates = {
             <p><strong>Items:</strong> ${data.items}</p>
             <p><strong>Amount:</strong> KES ${data.total.toLocaleString()}</p>
             <p><strong>Vendor:</strong> ${data.vendorName}</p>
-            ${data.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
+            ${data.reason ? `<p><strong>Reason:</strong> ${{
+      'out_of_stock': 'Item is out of stock',
+      'wrong_size': 'Size not available',
+      'pricing_error': 'Pricing error',
+      'cannot_deliver': 'Cannot deliver to your location',
+      'damaged_item': 'Item is damaged',
+      'other': 'Other reason'
+    }[data.reason] || data.reason}</p>` : ''}
           </div>
           
           <div class="refund-notice">

@@ -366,6 +366,7 @@ const VendorOrders = () => {
       supabase.functions.invoke("notify-buyer-order-declined", {
         body: {
           orderId: order.id,
+          reason: declineReason,
           isAutoDeclined: false,
         },
       }).catch(err => console.log("Buyer notification failed (non-critical):", err));
