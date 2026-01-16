@@ -63,6 +63,7 @@ const VendorDisputes = lazyRetry(() => import("./pages/vendor/VendorDisputes"));
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
 const AdminDisputes = lazyRetry(() => import("./pages/admin/AdminDisputes"));
 const NotFound = lazyRetry(() => import("./pages/NotFound"));
+const WhatsAppButton = lazyRetry(() => import("./components/WhatsAppButton"));
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -149,6 +150,7 @@ const AppLayout = () => {
           <AnimatedRoutes />
         </main>
         {!isVendorOrAdminPage && <Footer />}
+        <WhatsAppButton />
       </React.Suspense>
     </div>
   );

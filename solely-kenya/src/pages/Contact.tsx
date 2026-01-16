@@ -16,8 +16,18 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    toast.success("Message sent! We'll get back to you soon.");
+
+    // Create mailto link with form data
+    const supportEmail = "contact@solelyshoes.co.ke";
+    const subject = encodeURIComponent(`Contact Form: Message from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+
+    // Open user's email client with pre-filled content
+    window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
+
+    toast.success("Opening your email client...");
     setFormData({ name: "", email: "", message: "" });
   };
 
